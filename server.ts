@@ -3,16 +3,16 @@ import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
-import { connectDB } from './server/config/db';
-import { Bundle } from './server/models/Bundle';
-import authRoutes from './server/routes/auth';
-import productRoutes from './server/routes/products';
-import orderRoutes from './server/routes/orders';
-import promoRoutes from './server/routes/promo';
-import adminRoutes from './server/routes/admin';
-import settingsRoutes from './server/routes/settings';
-import bundleRoutes from './server/routes/bundles';
-import { errorHandler } from './server/middleware/errorHandler';
+import { connectDB } from './api/_lib/config/db';
+import { Bundle } from './api/_lib/models/Bundle';
+import authRoutes from './api/_lib/routes/auth';
+import productRoutes from './api/_lib/routes/products';
+import orderRoutes from './api/_lib/routes/orders';
+import promoRoutes from './api/_lib/routes/promo';
+import adminRoutes from './api/_lib/routes/admin';
+import settingsRoutes from './api/_lib/routes/settings';
+import bundleRoutes from './api/_lib/routes/bundles';
+import { errorHandler } from './api/_lib/middleware/errorHandler';
 
 dotenv.config();
 
