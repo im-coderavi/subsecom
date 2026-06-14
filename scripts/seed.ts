@@ -2,12 +2,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import mongoose from 'mongoose';
-import { connectDB } from '../api/config/db';
-import { Product } from '../api/models/Product';
-import { PromoCode } from '../api/models/PromoCode';
-import { User } from '../api/models/User';
-import { Settings } from '../api/models/Settings';
-import { Bundle } from '../api/models/Bundle';
+import { connectDB } from '../server/config/db';
+import { Product } from '../server/models/Product';
+import { PromoCode } from '../server/models/PromoCode';
+import { User } from '../server/models/User';
+import { Settings } from '../server/models/Settings';
+import { Bundle } from '../server/models/Bundle';
 
 const products = [
   {
