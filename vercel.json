@@ -1,14 +1,8 @@
 {
   "buildCommand": "vite build",
   "outputDirectory": "dist",
-  "functions": {
-    "api/vercel-entry.ts": {
-      "memory": 1024,
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/vercel-entry" },
+    { "source": "/api/:path*", "destination": "/api/index" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

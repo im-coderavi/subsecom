@@ -2,12 +2,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import mongoose from 'mongoose';
-import { connectDB } from './config/db';
-import { Product } from './models/Product';
-import { PromoCode } from './models/PromoCode';
-import { User } from './models/User';
-import { Settings } from './models/Settings';
-import { Bundle } from './models/Bundle';
+import { connectDB } from '../api/config/db';
+import { Product } from '../api/models/Product';
+import { PromoCode } from '../api/models/PromoCode';
+import { User } from '../api/models/User';
+import { Settings } from '../api/models/Settings';
+import { Bundle } from '../api/models/Bundle';
 
 const products = [
   {
@@ -146,37 +146,22 @@ const products = [
 
 const bundles = [
   {
-    name: 'Creator Bundle',
-    price: 2399, originalPrice: 3399, savingPercent: 30,
+    name: 'Creator Bundle', price: 2399, originalPrice: 3399, savingPercent: 30,
     products: ['Midjourney Pro', 'Runway Gen-3 Pro', 'ChatGPT Plus'],
     toolsCount: 3, colorTheme: 'creator' as const,
-    features: [
-      'Perfect for designers, YouTubers, and videomakers',
-      'High-fidelity cinematics & visual image processing',
-      'All chat, video, and image requirements in one',
-    ],
+    features: ['Perfect for designers, YouTubers, and videomakers', 'High-fidelity cinematics & visual image processing', 'All chat, video, and image requirements in one'],
   },
   {
-    name: 'Pro Bundle',
-    price: 2299, originalPrice: 3499, savingPercent: 35,
+    name: 'Pro Bundle', price: 2299, originalPrice: 3499, savingPercent: 35,
     products: ['Claude 3.5 Sonoma', 'ChatGPT Plus', 'Gemini Advanced'],
     toolsCount: 3, colorTheme: 'pro' as const,
-    features: [
-      'The Holy Trinity of Conversational AI Assistants',
-      'Compare outputs across LLMs instantly',
-      'Maximize research capacity with over 1.2M token workspace',
-    ],
+    features: ['The Holy Trinity of Conversational AI Assistants', 'Compare outputs across LLMs instantly', 'Maximize research capacity with over 1.2M token workspace'],
   },
   {
-    name: 'Ultimate Bundle',
-    price: 2699, originalPrice: 4499, savingPercent: 40,
+    name: 'Ultimate Bundle', price: 2699, originalPrice: 4499, savingPercent: 40,
     products: ['ChatGPT Plus', 'Notion AI Pro', 'Suno AI Pro', 'Cursor Pro', 'ElevenLabs Pro'],
     toolsCount: 5, colorTheme: 'ultimate' as const,
-    features: [
-      'The complete developer and business operating suite',
-      'Includes text, code, voice, databases, and audio tools',
-      'Over ₹1800+ separate monthly SaaS cost saved instantly',
-    ],
+    features: ['The complete developer and business operating suite', 'Includes text, code, voice, databases, and audio tools', 'Over ₹1800+ separate monthly SaaS cost saved instantly'],
   },
 ];
 
@@ -188,50 +173,44 @@ const promoCodes = [
 ];
 
 const defaultSettings = [
-  { key: 'upi_id',          value: 'ainest@merchant-upi',             label: 'UPI ID' },
-  { key: 'upi_name',        value: 'AI Nest',                          label: 'UPI Display Name' },
-  { key: 'crypto_address',  value: '0x4b78A9C102Ef34cD7189033fA675306B78e1212c', label: 'Crypto Wallet Address' },
-  { key: 'crypto_network',  value: 'Ethereum (ERC-20)',                label: 'Crypto Network' },
-  { key: 'support_email',     value: 'support@ainest.com',              label: 'Support Email' },
-  { key: 'site_name',         value: 'AI Nest',                          label: 'Site Name' },
-  { key: 'whatsapp_number',   value: '919876543210',                     label: 'WhatsApp Number' },
+  { key: 'upi_id',         value: 'ainest@merchant-upi',                          label: 'UPI ID' },
+  { key: 'upi_name',       value: 'AI Nest',                                       label: 'UPI Display Name' },
+  { key: 'crypto_address', value: '0x4b78A9C102Ef34cD7189033fA675306B78e1212c',   label: 'Crypto Wallet Address' },
+  { key: 'crypto_network', value: 'Ethereum (ERC-20)',                             label: 'Crypto Network' },
+  { key: 'support_email',  value: 'support@ainest.com',                            label: 'Support Email' },
+  { key: 'site_name',      value: 'AI Nest',                                       label: 'Site Name' },
+  { key: 'whatsapp_number',value: '919876543210',                                  label: 'WhatsApp Number' },
 ];
 
 async function seed() {
   await connectDB();
 
-  // Products
   await Product.deleteMany({});
   await Product.insertMany(products);
   console.log(`✓ Seeded ${products.length} products`);
 
-  // Bundles
   await Bundle.deleteMany({});
   await Bundle.insertMany(bundles);
   console.log(`✓ Seeded ${bundles.length} bundles`);
 
-  // Promo codes
   await PromoCode.deleteMany({});
   await PromoCode.insertMany(promoCodes);
   console.log(`✓ Seeded ${promoCodes.length} promo codes`);
 
-  // Settings
   await Settings.deleteMany({});
   await Settings.insertMany(defaultSettings);
   console.log(`✓ Seeded ${defaultSettings.length} settings`);
 
-  // Admin user — create or reset password (pre-save hook handles hashing)
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@ainest.com';
   const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@123456';
   const existing = await User.findOne({ email: adminEmail });
   if (!existing) {
     await User.create({ name: 'Admin', email: adminEmail, password: adminPassword, role: 'admin' });
-    console.log(`✓ Admin user created: ${adminEmail} / ${adminPassword}`);
+    console.log(`✓ Admin user created: ${adminEmail}`);
   } else {
-    // Reset password so the pre-save hook re-hashes it correctly
     existing.password = adminPassword;
     await existing.save();
-    console.log(`✓ Admin password reset: ${adminEmail} / ${adminPassword}`);
+    console.log(`✓ Admin password reset: ${adminEmail}`);
   }
 
   await mongoose.disconnect();
@@ -239,7 +218,4 @@ async function seed() {
   process.exit(0);
 }
 
-seed().catch((err) => {
-  console.error('Seed failed:', err);
-  process.exit(1);
-});
+seed().catch((err) => { console.error('Seed failed:', err); process.exit(1); });
