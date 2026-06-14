@@ -76,15 +76,12 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/bundles', bundleRoutes);
 
-// Gemini chat
-const apiKey = process.env.GEMINI_API_KEY;
-const ai = apiKey
-  ? new GoogleGenAI({ apiKey, httpOptions: { headers: { 'User-Agent': 'aistudio-build' } } })
-  : null;
-
+// Gemini chat — construct client lazily (avoids any module-load crash)
 app.post('/api/gemini/chat', async (req, res) => {
   try {
-    if (!ai) return res.status(500).json({ error: 'GEMINI_API_KEY not configured.' });
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY not configured.' });
+    const ai = new GoogleGenAI({ apiKey, httpOptions: { headers: { 'User-Agent': 'aistudio-build' } } });
     const { messages, systemInstruction } = req.body;
     if (!messages || !Array.isArray(messages)) return res.status(400).json({ error: 'messages array required' });
     const contents = messages.map((m: { role: string; content: string }) => ({
