@@ -1,16 +1,16 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
-import { connectDB } from './api/config/db';
-import { Bundle } from './api/models/Bundle';
-import authRoutes from './api/routes/auth';
-import productRoutes from './api/routes/products';
-import orderRoutes from './api/routes/orders';
-import promoRoutes from './api/routes/promo';
-import adminRoutes from './api/routes/admin';
-import settingsRoutes from './api/routes/settings';
-import bundleRoutes from './api/routes/bundles';
-import { errorHandler } from './api/middleware/errorHandler';
+import { connectDB } from './config/db';
+import { Bundle } from './models/Bundle';
+import authRoutes from './routes/auth';
+import productRoutes from './routes/products';
+import orderRoutes from './routes/orders';
+import promoRoutes from './routes/promo';
+import adminRoutes from './routes/admin';
+import settingsRoutes from './routes/settings';
+import bundleRoutes from './routes/bundles';
+import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
