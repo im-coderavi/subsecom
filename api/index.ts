@@ -10,7 +10,6 @@ import promoRoutes from './routes/promo';
 import adminRoutes from './routes/admin';
 import settingsRoutes from './routes/settings';
 import bundleRoutes from './routes/bundles';
-import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
@@ -18,7 +17,20 @@ const app = express();
 
 app.use(express.json({ limit: '10mb' }));
 
-// Lazy DB connect + one-time bundle seed per cold start
+// Health check — does NOT touch the database (isolates module vs DB problems)
+app.get('/api/health', (_req, res) => {
+  res.json({
+    ok: true,
+    env: {
+      MONGODB_URI: process.env.MONGODB_URI ? 'set' : 'MISSING',
+      JWT_SECRET: process.env.JWT_SECRET ? 'set' : 'MISSING',
+      CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME ? 'set' : 'MISSING',
+      SMTP_USER: process.env.SMTP_USER ? 'set' : 'MISSING',
+    },
+  });
+});
+
+// Connect to DB on each request (cached after first connect)
 let seeded = false;
 app.use(async (_req, _res, next) => {
   try {
@@ -91,6 +103,15 @@ app.post('/api/gemini/chat', async (req, res) => {
   }
 });
 
-app.use(errorHandler);
+// Error handler — surfaces the real error message (temporary debug)
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('API ERROR:', err);
+  const status = err?.statusCode ?? 500;
+  res.status(status).json({
+    error: err?.message || 'Internal Server Error',
+    name: err?.name,
+    stack: process.env.NODE_ENV === 'production' ? String(err?.stack || '').split('\n').slice(0, 4) : undefined,
+  });
+});
 
 export default app;
