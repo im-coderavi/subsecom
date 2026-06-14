@@ -1,0 +1,550 @@
+import React, { useRef, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useCartStore } from '../store/useCartStore';
+import { useAuthStore } from '../store/useAuthStore';
+import { useSettingsStore } from '../store/useSettingsStore';
+import { LucideIcon } from '../components/LucideIcon';
+
+export function Checkout() {
+  const navigate = useNavigate();
+  const cartItems = useCartStore((state) => state.items);
+  const clearCart = useCartStore((state) => state.clearCart);
+  const { total } = useCartStore((state) => state.getTotals)();
+  const currentUser = useAuthStore((state) => state.user);
+  const upiId   = useSettingsStore((s) => s.upi_id);
+  const upiName = useSettingsStore((s) => s.upi_name);
+
+  // Form states
+  const [name, setName] = useState(currentUser?.name || '');
+  const [email, setEmail] = useState(currentUser?.email || '');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'crypto' | 'upi'>('card');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCVV, setCardCVV] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isUpiPending, setIsUpiPending] = useState(false);
+
+  // UPI proof states
+  const [utrNumber, setUtrNumber] = useState('');
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [proofPreview, setProofPreview] = useState('');
+  const [proofUploading, setProofUploading] = useState(false);
+  const proofInputRef = useRef<HTMLInputElement>(null);
+
+  const [dispatchedCredentials, setDispatchedCredentials] = useState<{ service: string; email: string; password: string; instructions?: string }[]>([]);
+  const [orderError, setOrderError] = useState('');
+
+  const token = useAuthStore((state) => state.token);
+  const { subtotal, discount } = useCartStore((state) => state.getTotals)();
+
+  const handleProofSelect = (file: File) => {
+    setProofFile(file);
+    setProofPreview(URL.createObjectURL(file));
+  };
+
+  const handleSubmitOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !email.trim()) return;
+
+    if (paymentMethod === 'upi') {
+      if (!utrNumber.trim()) { setOrderError('Please enter your UTR / reference number.'); return; }
+      if (!proofFile) { setOrderError('Please upload your payment screenshot.'); return; }
+    }
+
+    setIsSubmitting(true);
+    setOrderError('');
+
+    try {
+      let proofUrl = '';
+      if (paymentMethod === 'upi' && proofFile) {
+        setProofUploading(true);
+        const fd = new FormData();
+        fd.append('proof', proofFile);
+        const upRes = await fetch('/api/orders/upload-proof', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: fd,
+        });
+        const upData = await upRes.json();
+        if (!upRes.ok) throw new Error(upData.error || 'Proof upload failed');
+        proofUrl = upData.url;
+        setProofUploading(false);
+      }
+
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          items: cartItems.map((item) => ({
+            productId: item.id,
+            name: item.name,
+            price: item.price,
+            originalPrice: item.originalPrice,
+            quantity: item.quantity,
+            isBundle: item.isBundle,
+            logo: item.logo,
+          })),
+          subtotal,
+          discount,
+          total,
+          paymentMethod,
+          userEmail: email.trim(),
+          userName: name.trim(),
+          utrNumber: utrNumber.trim() || undefined,
+          paymentProof: proofUrl || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Order failed');
+
+      clearCart();
+      if (paymentMethod === 'upi') {
+        setIsUpiPending(true);
+      } else {
+        setDispatchedCredentials(data.order.credentials);
+        setIsSuccess(true);
+      }
+    } catch (err) {
+      setOrderError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setProofUploading(false);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (cartItems.length === 0 && !isSuccess && !isUpiPending) {
+    return (
+      <div className="w-full min-h-screen bg-[#F8F9FD] flex flex-col items-center justify-center pt-28 pb-16 px-4">
+        <div className="text-center max-w-sm flex flex-col items-center gap-4">
+          <div className="p-4 rounded-full bg-violet-100 text-violet-600">
+            <LucideIcon name="ShoppingCart" size={32} />
+          </div>
+          <h1 className="text-2xl font-black text-neutral-800 tracking-tight">Checkout is Empty</h1>
+          <p className="text-xs text-neutral-500 font-semibold leading-relaxed">
+            You don't have any pending subscriptions inside your shopping cart to execute secure payment processing.
+          </p>
+          <Link
+            to="/products"
+            className="px-6 py-2.5 bg-violet-600 text-white font-extrabold text-xs rounded-xl shadow-md cursor-pointer hover:bg-violet-700"
+          >
+            Explore AI Catalog
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full min-h-screen bg-[#F8F9FD] pt-28 pb-16 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto">
+        
+        {isUpiPending ? (
+          /* UPI Payment Submitted — Pending Verification */
+          <div className="p-8 sm:p-12 rounded-3xl bg-white border border-neutral-100 shadow-2xl max-w-xl mx-auto flex flex-col items-center text-center gap-6">
+            <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center">
+              <LucideIcon name="Clock" size={30} strokeWidth={2} />
+            </div>
+            <div>
+              <span className="text-[10px] font-black tracking-widest text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full uppercase">
+                Pending Verification
+              </span>
+              <h1 className="text-2xl font-black text-neutral-900 tracking-tight mt-3">Payment Submitted!</h1>
+              <p className="text-sm text-neutral-500 font-semibold mt-2 leading-relaxed">
+                We've received your payment proof. Our team will verify it and send a confirmation email to <strong className="text-neutral-700">{email}</strong> within <strong className="text-violet-600">2–5 minutes</strong>.
+              </p>
+            </div>
+            <div className="w-full p-4 rounded-2xl bg-violet-50 border border-violet-100 text-left space-y-2">
+              {[
+                { icon: 'QrCode', text: 'UPI payment proof received' },
+                { icon: 'Mail', text: 'Confirmation email will be sent to your inbox' },
+                { icon: 'Zap', text: 'Credentials delivered within 2–5 minutes of verification' },
+              ].map((item) => (
+                <div key={item.text} className="flex items-center gap-2.5 text-xs font-bold text-violet-700">
+                  <LucideIcon name={item.icon} size={13} className="flex-shrink-0" />
+                  {item.text}
+                </div>
+              ))}
+            </div>
+            <button onClick={() => navigate('/')} className="px-8 py-3.5 bg-neutral-900 hover:bg-neutral-800 text-white font-extrabold text-sm rounded-xl transition-all w-full cursor-pointer">
+              Back to Home
+            </button>
+          </div>
+        ) : isSuccess ? (
+          /* High-Fidelity Purchase Success Dashboard Visual */
+          <div className="p-8 sm:p-12 rounded-3xl bg-white border border-neutral-100 shadow-2xl max-w-2xl mx-auto flex flex-col items-center text-center gap-6">
+            
+            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-inner scale-110">
+              <LucideIcon name="Check" size={28} strokeWidth={3} />
+            </div>
+
+            <div>
+              <span className="text-[10px] font-black tracking-widest text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full uppercase leading-none">
+                Payment Success Authorized
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight mt-3">
+                Your AI Nest Subscriptions are Active!
+              </h1>
+              <p className="text-sm font-semibold text-neutral-400 mt-2">
+                We have successfully set up your premium workspaces. Direct account credentials follow below:
+              </p>
+            </div>
+
+            {/* List of generated credentials */}
+            <div className="w-full space-y-4 text-left my-4">
+              {dispatchedCredentials.map((cred, i) => (
+                <div key={i} className="p-5 rounded-2xl bg-neutral-50 border border-neutral-100 flex flex-col gap-3">
+
+                  <div className="flex items-center gap-2 border-b border-neutral-200/50 pb-2">
+                    <div className="w-6 h-6 rounded bg-violet-100 text-violet-600 flex items-center justify-center font-bold text-xs">
+                      <LucideIcon name="Shield" size={12} />
+                    </div>
+                    <span className="text-xs sm:text-sm font-black text-neutral-800">{cred.service} Seat Details</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <span className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-wider block">Username / Email</span>
+                      <strong className="text-neutral-800 font-bold block mt-0.5 select-all">{cred.email}</strong>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-wider block">Password Coordinates</span>
+                      <strong className="text-neutral-800 font-mono font-black block mt-0.5 select-all">{cred.password}</strong>
+                    </div>
+                  </div>
+
+                  <div className="text-[10px] text-neutral-500 font-semibold leading-normal bg-white p-2 rounded-lg border border-neutral-105-to-neutral-110 mt-1">
+                    📖 <strong>Usage Guideline:</strong> {cred.instructions}
+                  </div>
+
+                </div>
+              ))}
+            </div>
+
+            {/* Support assurances */}
+            <div className="p-4 rounded-2xl bg-violet-50 text-violet-600 border border-violet-100/50 text-xs font-semibold text-left w-full flex items-start gap-3">
+              <LucideIcon name="HelpCircle" size={18} className="mt-0.5 flex-shrink-0" />
+              <div>
+                <span>Need support setting up other integrations?</span>
+                <p className="text-[10px] text-neutral-400 font-bold mt-0.5 leading-normal">
+                  Our live coordinators are active 24/7. Reach out via live chat to troubleshoot Cursor custom embeddings, local DALL-E endpoints or Microsoft Office integrations anytime.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => navigate('/')}
+              className="px-8 py-3.5 bg-neutral-900 hover:bg-neutral-800 text-white font-extrabold text-xs sm:text-sm rounded-xl transition-all w-full cursor-pointer"
+            >
+              Back to Home Dashboard
+            </button>
+
+          </div>
+        ) : (
+          /* Secure Checkout Billing panel */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            {/* Form Left Panel (7 Columns) */}
+            <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-white border border-neutral-100 shadow-sm">
+              <h2 className="text-lg font-black text-neutral-900 tracking-tight mb-6 flex items-center gap-2">
+                <LucideIcon name="Contact" size={18} className="text-violet-500" />
+                SaaS Billing Accounts
+              </h2>
+
+              <form onSubmit={handleSubmitOrder} className="space-y-6">
+                
+                {/* Coordinates */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-black text-neutral-500 uppercase tracking-wider">Full Legal Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="e.g. Sarah Jenkins"
+                      className="bg-neutral-50 px-3.5 py-2.5 rounded-xl border border-neutral-100 focus:bg-white focus:outline-none focus:border-violet-400 text-xs font-bold text-neutral-800"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-black text-neutral-500 uppercase tracking-wider">E-mail Dispatch</label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="jenkins@domain.com"
+                      className="bg-neutral-50 px-3.5 py-2.5 rounded-xl border border-neutral-100 focus:bg-white focus:outline-none focus:border-violet-400 text-xs font-bold text-neutral-800"
+                    />
+                  </div>
+                </div>
+
+                <div className="border-t border-neutral-100 pt-6">
+                  <h3 className="text-sm font-extrabold text-neutral-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <LucideIcon name="CreditCard" size={14} className="text-violet-500" />
+                    Select Secure Payment Method
+                  </h3>
+
+                  {/* Payment selector row */}
+                  <div className="grid grid-cols-3 gap-3 mb-6">
+                    
+                    {/* card */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('card')}
+                      className={`p-3.5 rounded-xl border flex flex-col items-center justify-center gap-1.5 font-bold text-xs transition-all cursor-pointer ${
+                        paymentMethod === 'card'
+                          ? 'border-violet-600 bg-violet-600/5 text-violet-600'
+                          : 'border-neutral-200/60 text-neutral-500 hover:border-neutral-300'
+                      }`}
+                    >
+                      <LucideIcon name="CreditCard" size={16} />
+                      <span>Credit Card</span>
+                    </button>
+
+                    {/* crypto */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('crypto')}
+                      className={`p-3.5 rounded-xl border flex flex-col items-center justify-center gap-1.5 font-bold text-xs transition-all cursor-pointer ${
+                        paymentMethod === 'crypto'
+                          ? 'border-violet-600 bg-violet-600/5 text-violet-600'
+                          : 'border-neutral-200/60 text-neutral-500 hover:border-neutral-300'
+                      }`}
+                    >
+                      <LucideIcon name="Bitcoin" size={16} />
+                      <span>Cryptocurrency</span>
+                    </button>
+
+                    {/* upi */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('upi')}
+                      className={`p-3.5 rounded-xl border flex flex-col items-center justify-center gap-1.5 font-bold text-xs transition-all cursor-pointer ${
+                        paymentMethod === 'upi'
+                          ? 'border-violet-600 bg-violet-600/5 text-violet-600'
+                          : 'border-neutral-200/60 text-neutral-500 hover:border-neutral-300'
+                      }`}
+                    >
+                      <LucideIcon name="QrCode" size={16} />
+                      <span>UPI / Wallet</span>
+                    </button>
+
+                  </div>
+
+                  {/* Dynamic payment displays */}
+                  {paymentMethod === 'card' && (
+                    <div className="space-y-4 p-4 rounded-2xl bg-neutral-50 border border-neutral-100">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest">Credit Card Number</label>
+                        <input
+                          type="text"
+                          required
+                          value={cardNumber}
+                          onChange={(e) => setCardNumber(e.target.value)}
+                          placeholder="4111 •••• •••• 1111"
+                          className="bg-white px-3 py-2 rounded-xl border border-neutral-200 focus:outline-none focus:border-violet-400 text-xs font-mono font-bold text-neutral-800"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest">Expiration</label>
+                          <input
+                            type="text"
+                            required
+                            value={cardExpiry}
+                            onChange={(e) => setCardExpiry(e.target.value)}
+                            placeholder="MM/YY"
+                            className="bg-white px-3 py-2 rounded-xl border border-neutral-200 focus:outline-none focus:border-violet-400 text-xs font-mono font-bold text-neutral-800"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest">CVV / Code</label>
+                          <input
+                            type="text"
+                            required
+                            value={cardCVV}
+                            onChange={(e) => setCardCVV(e.target.value)}
+                            placeholder="•••"
+                            className="bg-white px-3 py-2 rounded-xl border border-neutral-200 focus:outline-none focus:border-violet-400 text-xs font-mono font-bold text-neutral-800"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'crypto' && (
+                    <div className="p-5 rounded-2xl bg-neutral-900 border border-neutral-800 text-white flex flex-col gap-4 text-left">
+                      <div className="flex items-center gap-2">
+                        <LucideIcon name="Coins" size={16} className="text-amber-500 animate-spin" />
+                        <span className="text-xs font-bold text-neutral-200">Ethereum Network Direct Deposit</span>
+                      </div>
+                      <div>
+                        <span className="text-[9px] font-extrabold uppercase text-neutral-500 tracking-wider block">ERC-20 Ethereum Deposit address</span>
+                        <strong className="text-xs font-mono text-violet-400 font-bold block mt-1 select-all break-all bg-black/60 p-2.5 rounded-lg border border-neutral-800/80">
+                          0x4b78A9C102Ef34cD7189033fA675306B78e1212c
+                        </strong>
+                      </div>
+                      <p className="text-[10px] text-neutral-400 font-semibold leading-normal">
+                        🔒 After deposits authorize on the Ethereum mainnet ledger, credentials will be automatically compiled inside your dispatch dashboard in 2-5 minutes.
+                      </p>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'upi' && (
+                    <div className="space-y-4">
+                      {/* Step 1 — QR + UPI ID */}
+                      <div className="p-5 rounded-2xl bg-neutral-50 border border-neutral-100 flex flex-col sm:flex-row items-center gap-5">
+                        {upiId ? (
+                          <img
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(`upi://pay?pa=${upiId}&pn=${encodeURIComponent(upiName)}&cu=INR&am=${total}`)}`}
+                            alt="UPI QR"
+                            className="w-32 h-32 rounded-xl border border-neutral-200 bg-white p-1 flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-32 h-32 rounded-xl border border-neutral-200 bg-white flex items-center justify-center flex-shrink-0">
+                            <LucideIcon name="QrCode" size={56} className="text-neutral-400" />
+                          </div>
+                        )}
+                        <div className="text-center sm:text-left">
+                          <p className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest mb-1">Step 1 — Scan &amp; Pay</p>
+                          <p className="text-sm font-black text-neutral-800 mb-1">Scan QR or pay to UPI ID</p>
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 rounded-lg">
+                            <LucideIcon name="QrCode" size={11} className="text-white" />
+                            <span className="text-xs font-black text-white tracking-wide">{upiId || 'UPI ID not set'}</span>
+                          </div>
+                          <p className="text-[10px] text-neutral-500 font-semibold mt-2">Amount: <strong className="text-neutral-700">₹{total.toLocaleString('en-IN')}</strong></p>
+                        </div>
+                      </div>
+
+                      {/* Step 2 — Upload proof */}
+                      <div className="p-5 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-3">
+                        <p className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest">Step 2 — Upload Payment Screenshot</p>
+                        <input
+                          ref={proofInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleProofSelect(f); }}
+                        />
+                        {proofPreview ? (
+                          <div className="relative">
+                            <img src={proofPreview} alt="proof" className="w-full max-h-48 object-contain rounded-xl border border-emerald-200 bg-white" />
+                            <button
+                              type="button"
+                              onClick={() => { setProofFile(null); setProofPreview(''); }}
+                              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center"
+                            >
+                              <LucideIcon name="X" size={11} />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => proofInputRef.current?.click()}
+                            className="w-full py-6 border-2 border-dashed border-neutral-200 hover:border-violet-400 rounded-xl flex flex-col items-center gap-2 text-neutral-400 hover:text-violet-500 transition-all cursor-pointer"
+                          >
+                            <LucideIcon name="Upload" size={22} />
+                            <span className="text-xs font-bold">Click to upload payment screenshot</span>
+                            <span className="text-[10px]">PNG, JPG up to 5MB</span>
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Step 3 — UTR */}
+                      <div className="p-5 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
+                        <p className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest">Step 3 — Enter UTR / Reference Number</p>
+                        <input
+                          type="text"
+                          value={utrNumber}
+                          onChange={(e) => setUtrNumber(e.target.value)}
+                          placeholder="e.g. 423598716234"
+                          className="w-full bg-white px-3.5 py-2.5 rounded-xl border border-neutral-200 focus:outline-none focus:border-violet-400 text-xs font-mono font-bold text-neutral-800 placeholder-neutral-400"
+                        />
+                        <p className="text-[10px] text-neutral-400 font-semibold">Find this in your UPI app under transaction details</p>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+
+                {orderError && (
+                  <p className="text-xs font-bold text-red-500 bg-red-50 border border-red-100 rounded-xl px-3.5 py-2.5">{orderError}</p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting || proofUploading}
+                  className="w-full py-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:scale-[1.01] hover:shadow-lg shadow-violet-500/15 disabled:opacity-50 text-white font-extrabold text-sm sm:text-base rounded-2xl transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  {(isSubmitting || proofUploading) ? (
+                    <>
+                      <LucideIcon name="RefreshCcw" size={16} className="animate-spin" />
+                      {proofUploading ? 'Uploading proof...' : paymentMethod === 'upi' ? 'Submitting...' : 'Authorizing...'}
+                    </>
+                  ) : paymentMethod === 'upi' ? (
+                    <>
+                      <LucideIcon name="ShieldCheck" size={16} strokeWidth={2.5} />
+                      Submit Payment for Verification — ₹{total.toLocaleString('en-IN')}
+                    </>
+                  ) : (
+                    <>
+                      <LucideIcon name="ShieldCheck" size={16} strokeWidth={2.5} />
+                      Authorize Secure Payment (₹{total.toLocaleString('en-IN')})
+                    </>
+                  )}
+                </button>
+
+              </form>
+            </div>
+
+            {/* Shopping Cart breakdown (5 Columns) */}
+            <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-white border border-neutral-100 shadow-sm flex flex-col justify-between">
+              <div>
+                <h3 className="text-xs font-extrabold text-neutral-400 uppercase tracking-widest mb-6 border-b border-neutral-50/80 pb-3">
+                  Your Package Compilation
+                </h3>
+
+                <div className="divide-y divide-neutral-50 space-y-3.5 mb-6">
+                  {cartItems.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between py-2 first:pt-0">
+                      <div className="flex items-center gap-3">
+                        <div className="p-1 rounded bg-neutral-50 text-neutral-500 border border-neutral-100/50">
+                          <LucideIcon name={item.logo || 'HelpCircle'} size={14} />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xs font-extrabold text-neutral-800 leading-none">{item.name}</span>
+                          <span className="text-[10px] text-neutral-400 font-bold mt-1 leading-none">{item.quantity} Seat license</span>
+                        </div>
+                      </div>
+                      <span className="text-xs font-black text-rose-500">₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-t border-neutral-200/50 pt-6">
+                <div className="flex justify-between items-baseline mb-4">
+                  <span className="text-xs font-bold text-neutral-500">Aggregate Total</span>
+                  <span className="text-xl sm:text-2xl font-black text-rose-600">₹{total.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="bg-neutral-50/50 border border-neutral-100 rounded-2xl p-4 flex items-center gap-3 text-[11px] font-bold text-neutral-500 leading-snug">
+                  <LucideIcon name="ShieldAlert" size={14} className="text-violet-500 flex-shrink-0" />
+                  <span>
+                    Your payment details are processed under PCI-DSS Level 1 compliance. Data is completely end-to-end encrypted.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}

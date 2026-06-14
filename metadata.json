@@ -1,0 +1,6 @@
+{
+  "name": "AI Nest",
+  "description": "Premium AI Subscription Marketplace. Subscribe and access top AI tools with verified accounts, instant delivery, and affordable prices.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
