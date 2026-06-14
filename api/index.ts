@@ -18,9 +18,11 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 
 // Health check — does NOT touch the database
-app.get('/api/health', (_req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({
     ok: true,
+    url: req.url,
+    originalUrl: req.originalUrl,
     env: {
       MONGODB_URI: process.env.MONGODB_URI ? 'set' : 'MISSING',
       JWT_SECRET: process.env.JWT_SECRET ? 'set' : 'MISSING',
