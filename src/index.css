@@ -78,3 +78,40 @@ body {
   100% { transform: translateX(-50%); }
 }
 .marquee-fast { animation: marquee-fast 40s linear infinite; }
+
+/* ── Running-light animated border (on cards) ── */
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes border-spin { to { --border-angle: 360deg; } }
+
+.running-border { position: relative; isolation: isolate; }
+.running-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 0deg,
+    transparent 250deg,
+    #2e90fa 310deg,
+    #93c5fd 335deg,
+    #2e90fa 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  animation: border-spin 4.5s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+.running-border > * { position: relative; z-index: 2; }
+
+@media (prefers-reduced-motion: reduce) {
+  .running-border::before { animation: none; }
+}
