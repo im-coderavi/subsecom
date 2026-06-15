@@ -42,7 +42,7 @@ const CATEGORY_LABEL: Record<string, string> = {
 // Payment-method row matching the reference (2 white pills + 3 colored circles)
 function PaymentRow() {
   return (
-    <div className="flex items-center justify-center gap-2 pt-3 mt-3 border-t border-line/70">
+    <div className="flex items-center justify-center flex-wrap gap-2 pt-3 mt-3 border-t border-line/70">
       <span className="h-6 px-2 rounded-md bg-white flex items-center justify-center text-[9px] font-black italic text-[#1a1f71] shadow-sm">VISA</span>
       <span className="h-6 px-2.5 rounded-md bg-white flex items-center justify-center shadow-sm">
         <span className="w-3 h-3 rounded-full bg-[#eb001b] -mr-1.5" /><span className="w-3 h-3 rounded-full bg-[#f79e1b]/90" />

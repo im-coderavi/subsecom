@@ -69,7 +69,7 @@ export function FeatureCarousel({ products, whatsappNumber }: Props) {
           </div>
         </div>
 
-        <div className="relative p-6 sm:p-10 md:p-12 h-[320px] sm:h-[380px] md:h-[400px] lg:h-[420px] flex flex-col justify-center">
+        <div className="relative p-6 sm:p-10 md:p-12 min-h-[360px] sm:h-[380px] md:h-[400px] lg:h-[420px] flex flex-col justify-center">
           {/* tags top */}
           <div className="flex items-center gap-2 mb-6">
             <span className="text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/15 text-white backdrop-blur-sm">
