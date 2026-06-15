@@ -1,57 +1,58 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
 /*
   ┌─────────────────────────────────────────────────────────────┐
-  │  AI NEST — CENTRAL THEME                                       │
-  │  Saare brand colors yahin defined hain. Exact shade match     │
-  │  karna ho to bas in `--color-brand-*` values ko badlo —       │
-  │  poori site (buttons, links, accents) update ho jayegi.       │
+  │  AI NEST — CENTRAL DARK THEME                                  │
+  │  Saare colors yahin. Shade badalna ho to in tokens ko edit    │
+  │  karo — poori site (buttons, links, bg, cards) update hogi.   │
   └─────────────────────────────────────────────────────────────┘
 */
 @theme {
   --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  /* PRIMARY BRAND SCALE (indigo-blue — premium digital store) */
-  --color-brand-50:  #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-300: #a5b4fc;
-  --color-brand-400: #818cf8;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;  /* main */
-  --color-brand-700: #4338ca;
-  --color-brand-800: #3730a3;
-  --color-brand-900: #312e81;
+  /* PRIMARY — sky / azure blue */
+  --color-brand-50:  #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #5bb8ff;
+  --color-brand-500: #3b9eff;
+  --color-brand-600: #2e90fa;  /* main */
+  --color-brand-700: #1e78e6;
+  --color-brand-800: #1a5fb8;
+  --color-brand-900: #15375f;
 
-  /* SUPPORTING ACCENTS */
-  --color-ink:    #0f1422;   /* darkest text / dark sections */
-  --color-ink-2:  #1c2333;   /* dark card */
-  --color-page:   #f7f8fb;   /* page background */
-  --color-gold:   #f5a623;   /* "Royal"/premium accent */
+  /* DARK SURFACES */
+  --color-page:      #0a0e17;  /* deep navy page bg */
+  --color-surface:   #131a28;  /* card */
+  --color-surface-2: #0f1521;  /* darker panel */
+  --color-surface-3: #182030;  /* hover / raised */
+  --color-line:      #232c3d;  /* borders */
+  --color-ink:       #0a0e17;
 
-  /* keep legacy violet tokens so not-yet-converted pages still render */
-  --color-violet-50: #f5f3ff;
-  --color-violet-100: #ede9fe;
-  --color-violet-600: #7c3aed;
-  --color-violet-700: #6d28d9;
+  /* ACCENTS */
+  --color-gold: #f5b73d;       /* "Featured" star */
 }
 
 html { scroll-behavior: smooth; }
-body { background: var(--color-page); }
+body {
+  background: var(--color-page);
+  color: #cbd5e1;
+}
 
-/* Webkit scrollbars — subtle, premium */
+/* Webkit scrollbars — dark */
 ::-webkit-scrollbar { width: 9px; height: 9px; }
-::-webkit-scrollbar-track { background: #f1f3f9; }
-::-webkit-scrollbar-thumb { background: #d3d9e6; border-radius: 99px; border: 2px solid #f1f3f9; }
-::-webkit-scrollbar-thumb:hover { background: #b9c1d4; }
+::-webkit-scrollbar-track { background: #0a0e17; }
+::-webkit-scrollbar-thumb { background: #232c3d; border-radius: 99px; border: 2px solid #0a0e17; }
+::-webkit-scrollbar-thumb:hover { background: #324056; }
 
-/* Grid overlay background decorator (used on dark CTA bands) */
+/* Grid overlay decorator */
 .bg-grid-pattern {
   background-size: 30px 30px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }
 
 .preserve-3d { transform-style: preserve-3d; }
@@ -61,12 +62,19 @@ body { background: var(--color-page); }
 
 .mask-fade-edges {
   mask-image: linear-gradient(to right, transparent, white 5%, white 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, white 5%, white 95%, transparent);
 }
 
-/* Seamless marquee for the category strip */
+/* Seamless marquees */
 @keyframes marquee-scroll {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-.marquee-track { animation: marquee-scroll 26s linear infinite; }
+.marquee-track { animation: marquee-scroll 30s linear infinite; }
 .marquee-wrapper:hover .marquee-track { animation-play-state: paused; }
+
+@keyframes marquee-fast {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-fast { animation: marquee-fast 40s linear infinite; }

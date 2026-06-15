@@ -26,7 +26,7 @@ function ScrollToTop() {
 // Shared public layout using Outlet
 function PublicLayout() {
   return (
-    <div className="flex flex-col min-h-screen bg-page font-sans antialiased selection:bg-brand-500/10 selection:text-brand-600">
+    <div className="flex flex-col min-h-screen bg-page text-slate-300 font-sans antialiased selection:bg-brand-500/25 selection:text-white">
       <Navbar />
       <main className="flex-grow">
         <Outlet />
