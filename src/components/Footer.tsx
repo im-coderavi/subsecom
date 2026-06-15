@@ -18,7 +18,7 @@ export function Footer() {
   ];
 
   return (
-    <footer id="footer" className="bg-[#0c1320] border-t border-line pt-16 pb-10 mt-auto">
+    <footer id="footer" className="bg-[#161d26] border-t border-line pt-16 pb-10 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
 

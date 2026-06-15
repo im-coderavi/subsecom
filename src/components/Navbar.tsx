@@ -71,7 +71,7 @@ export function Navbar() {
   return (
     <>
       {/* ── Top announcement bar ── */}
-      <div className="bg-[#0c1320] border-b border-line/70 overflow-hidden">
+      <div className="bg-[#161d26] border-b border-line/70 overflow-hidden">
         <div className="max-w-[1400px] mx-auto flex items-center h-9">
           <div className="flex items-center gap-1.5 px-4 flex-shrink-0 border-r border-line/70 h-full">
             <LucideIcon name="Megaphone" size={13} className="text-brand-400" />
@@ -95,7 +95,7 @@ export function Navbar() {
       </div>
 
       {/* ── Main nav ── */}
-      <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#0a0e17]/90 backdrop-blur-xl border-b border-line shadow-lg shadow-black/30' : 'bg-transparent'}`}>
+      <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#182029]/90 backdrop-blur-xl border-b border-line shadow-lg shadow-black/30' : 'bg-transparent'}`}>
         <nav className="max-w-[1400px] mx-auto flex items-center justify-between gap-4 px-4 sm:px-6 h-[68px]">
 
           {/* Logo */}
@@ -170,7 +170,7 @@ export function Navbar() {
             <motion.div
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="fixed top-0 right-0 bottom-0 w-[82%] max-w-[320px] bg-[#0c1320] border-l border-line z-50 shadow-2xl flex flex-col lg:hidden"
+              className="fixed top-0 right-0 bottom-0 w-[82%] max-w-[320px] bg-[#161d26] border-l border-line z-50 shadow-2xl flex flex-col lg:hidden"
             >
               <div className="p-4 border-b border-line flex items-center justify-between">
                 <div className="flex items-center gap-2">
