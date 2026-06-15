@@ -24,13 +24,13 @@
   --color-brand-800: #1a5fb8;
   --color-brand-900: #15375f;
 
-  /* DARK SURFACES — lighter slate navy (#313F56 tone) */
-  --color-page:      #2a3649;  /* page bg */
-  --color-surface:   #313f56;  /* card */
-  --color-surface-2: #232e40;  /* darker panel / inputs */
-  --color-surface-3: #3b4a64;  /* image box / hover / raised */
-  --color-line:      #45546f;  /* borders */
-  --color-ink:       #1c2533;
+  /* DARK SURFACES — exact reference tones (LAB-matched) */
+  --color-page:      #0e1521;  /* --background  (lab L15) */
+  --color-surface:   #161f2e;  /* --card        (lab L21) */
+  --color-surface-2: #111927;  /* darker insets / inputs */
+  --color-surface-3: #1d2634;  /* --secondary/muted (lab L26) — raised/hover/image box */
+  --color-line:      #2a3442;  /* --border (~white 12%) */
+  --color-ink:       #0b1019;
 
   /* ACCENTS */
   --color-gold: #f5b73d;       /* "Featured" star */
@@ -44,9 +44,9 @@ body {
 
 /* Webkit scrollbars — dark */
 ::-webkit-scrollbar { width: 9px; height: 9px; }
-::-webkit-scrollbar-track { background: #2a3649; }
-::-webkit-scrollbar-thumb { background: #45546f; border-radius: 99px; border: 2px solid #2a3649; }
-::-webkit-scrollbar-thumb:hover { background: #56678a; }
+::-webkit-scrollbar-track { background: #0e1521; }
+::-webkit-scrollbar-thumb { background: #2a3442; border-radius: 99px; border: 2px solid #0e1521; }
+::-webkit-scrollbar-thumb:hover { background: #3a4658; }
 
 /* Grid overlay decorator */
 .bg-grid-pattern {

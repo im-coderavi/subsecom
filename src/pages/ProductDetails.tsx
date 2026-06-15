@@ -138,7 +138,7 @@ export function ProductDetails() {
 
             {/* HERO CARD */}
             <div className="rounded-3xl overflow-hidden border border-line">
-              <div className="relative bg-gradient-to-br from-[#3b4a64] via-[#2a3649] to-[#232e40] px-8 pt-10 pb-0 flex flex-col items-center overflow-hidden">
+              <div className="relative bg-gradient-to-br from-[#1d2634] via-[#0e1521] to-[#111927] px-8 pt-10 pb-0 flex flex-col items-center overflow-hidden">
                 <div className="absolute top-0 left-1/4 w-64 h-64 bg-brand-600/25 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute -bottom-8 right-1/4 w-48 h-48 bg-brand-500/15 rounded-full blur-2xl pointer-events-none" />
 
@@ -241,7 +241,7 @@ export function ProductDetails() {
             </div>
 
             {/* REVIEWS */}
-            <div className="rounded-3xl bg-gradient-to-br from-[#3b4a64] to-[#232e40] border border-line p-7">
+            <div className="rounded-3xl bg-gradient-to-br from-[#1d2634] to-[#111927] border border-line p-7">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-sm font-black text-white uppercase tracking-wider mb-1">Customer Reviews</h2>

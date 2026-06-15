@@ -43,10 +43,10 @@ export function FeatureCarousel({ products, whatsappNumber }: Props) {
   return (
     <div className="relative" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
       {/* side chevrons */}
-      <button onClick={prev} aria-label="Previous" className="absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[#232e40]/80 hover:bg-[#232e40] border border-line text-white flex items-center justify-center backdrop-blur transition-colors">
+      <button onClick={prev} aria-label="Previous" className="absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[#111927]/80 hover:bg-[#111927] border border-line text-white flex items-center justify-center backdrop-blur transition-colors">
         <LucideIcon name="ChevronLeft" size={18} />
       </button>
-      <button onClick={next} aria-label="Next" className="absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[#232e40]/80 hover:bg-[#232e40] border border-line text-white flex items-center justify-center backdrop-blur transition-colors">
+      <button onClick={next} aria-label="Next" className="absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[#111927]/80 hover:bg-[#111927] border border-line text-white flex items-center justify-center backdrop-blur transition-colors">
         <LucideIcon name="ChevronRight" size={18} />
       </button>
 
