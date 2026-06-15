@@ -1,56 +1,72 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
+/*
+  ┌─────────────────────────────────────────────────────────────┐
+  │  AI NEST — CENTRAL THEME                                       │
+  │  Saare brand colors yahin defined hain. Exact shade match     │
+  │  karna ho to bas in `--color-brand-*` values ko badlo —       │
+  │  poori site (buttons, links, accents) update ho jayegi.       │
+  └─────────────────────────────────────────────────────────────┘
+*/
 @theme {
   --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
-  
+
+  /* PRIMARY BRAND SCALE (indigo-blue — premium digital store) */
+  --color-brand-50:  #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;  /* main */
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+
+  /* SUPPORTING ACCENTS */
+  --color-ink:    #0f1422;   /* darkest text / dark sections */
+  --color-ink-2:  #1c2333;   /* dark card */
+  --color-page:   #f7f8fb;   /* page background */
+  --color-gold:   #f5a623;   /* "Royal"/premium accent */
+
+  /* keep legacy violet tokens so not-yet-converted pages still render */
   --color-violet-50: #f5f3ff;
   --color-violet-100: #ede9fe;
   --color-violet-600: #7c3aed;
   --color-violet-700: #6d28d9;
 }
 
-/* Custom Webkit scrollbars styling for smooth Apple-like feel */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+html { scroll-behavior: smooth; }
+body { background: var(--color-page); }
 
-::-webkit-scrollbar-track {
-  background: #f8f9fd;
-}
+/* Webkit scrollbars — subtle, premium */
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: #f1f3f9; }
+::-webkit-scrollbar-thumb { background: #d3d9e6; border-radius: 99px; border: 2px solid #f1f3f9; }
+::-webkit-scrollbar-thumb:hover { background: #b9c1d4; }
 
-::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 99px;
-  border: 2px solid #f8f9fd;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
-}
-
-/* Grid overlay background decorator */
+/* Grid overlay background decorator (used on dark CTA bands) */
 .bg-grid-pattern {
   background-size: 30px 30px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
 }
 
-/* Custom utilities */
-.preserve-3d {
-  transform-style: preserve-3d;
-}
+.preserve-3d { transform-style: preserve-3d; }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 .mask-fade-edges {
   mask-image: linear-gradient(to right, transparent, white 5%, white 95%, transparent);
 }
+
+/* Seamless marquee for the category strip */
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-track { animation: marquee-scroll 26s linear infinite; }
+.marquee-wrapper:hover .marquee-track { animation-play-state: paused; }

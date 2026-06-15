@@ -1,6 +1,7 @@
 import { Product } from '../types';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { LucideIcon } from './LucideIcon';
 
 interface ProductCardProps {
   product: Product;
@@ -23,9 +24,8 @@ const SLUG_COLORS: Record<string, { from: string; to: string }> = {
   'suno-pro':      { from: '#6d28d9', to: '#5b21b6' },
 };
 
-// Fallback by category
 const CATEGORY_COLORS: Record<string, { from: string; to: string }> = {
-  chat:         { from: '#7c3aed', to: '#4f46e5' },
+  chat:         { from: '#4f46e5', to: '#4338ca' },
   code:         { from: '#1e293b', to: '#0f172a' },
   image:        { from: '#e11d48', to: '#be123c' },
   video:        { from: '#dc2626', to: '#ea580c' },
@@ -35,6 +35,10 @@ const CATEGORY_COLORS: Record<string, { from: string; to: string }> = {
   writing:      { from: '#0284c7', to: '#0891b2' },
 };
 
+const CATEGORY_LABEL: Record<string, string> = {
+  chat: 'AI · Chat', code: 'AI · Code', image: 'AI · Image', video: 'AI · Video',
+  voice: 'AI · Voice', productivity: 'Productivity', design: 'Design', writing: 'AI · Writing',
+};
 
 export function ProductCard({ product, whatsappNumber }: ProductCardProps) {
   const [imgError, setImgError] = useState(false);
@@ -48,7 +52,7 @@ export function ProductCard({ product, whatsappNumber }: ProductCardProps) {
   const colors =
     SLUG_COLORS[product.slug] ??
     CATEGORY_COLORS[product.category] ??
-    { from: '#7c3aed', to: '#4f46e5' };
+    { from: '#4f46e5', to: '#4338ca' };
 
   const discount =
     product.originalPrice > product.monthlyPrice
@@ -59,19 +63,15 @@ export function ProductCard({ product, whatsappNumber }: ProductCardProps) {
   const showImage = product.image && !imgError;
 
   return (
-    <div className="group flex flex-col rounded-2xl bg-white border border-neutral-100 shadow-sm hover:shadow-lg hover:border-violet-100/80 transition-all duration-300 overflow-hidden">
+    <div className="group flex flex-col rounded-2xl bg-white border border-slate-200/70 shadow-sm hover:shadow-xl hover:shadow-slate-200/60 hover:border-brand-200 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
 
       {/* Image section — full bleed */}
       <div
         className="relative overflow-hidden flex-shrink-0"
-        style={{
-          height: 168,
-          background: `linear-gradient(135deg, ${colors.from}, ${colors.to})`,
-        }}
+        style={{ height: 170, background: `linear-gradient(135deg, ${colors.from}, ${colors.to})` }}
       >
-        {/* Gloss overlay */}
         <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 55%)' }} />
+          style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.16) 0%, transparent 55%)' }} />
 
         {showImage ? (
           <img
@@ -81,7 +81,6 @@ export function ProductCard({ product, whatsappNumber }: ProductCardProps) {
             onError={() => setImgError(true)}
           />
         ) : (
-          /* Fallback — large initials on brand gradient */
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-white font-black select-none drop-shadow-lg" style={{ fontSize: 56, letterSpacing: '-2px' }}>
               {initials}
@@ -89,47 +88,48 @@ export function ProductCard({ product, whatsappNumber }: ProductCardProps) {
           </div>
         )}
 
-        {/* Badges */}
-        {product.badge && (
-          <span className="absolute top-3 left-3 text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full bg-black/40 text-white backdrop-blur-sm">
-            {product.badge}
-          </span>
-        )}
+        {/* Category tag */}
+        <span className="absolute top-3 left-3 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/90 text-slate-700 backdrop-blur-sm shadow-sm">
+          {CATEGORY_LABEL[product.category] ?? product.category}
+        </span>
         {discount > 0 && (
-          <span className="absolute top-3 right-3 text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-rose-500 text-white shadow-sm">
+          <span className="absolute top-3 right-3 text-[9px] font-extrabold px-2 py-1 rounded-full bg-rose-500 text-white shadow-sm">
             -{discount}%
           </span>
         )}
+
+        {/* Delivery badge — bottom */}
+        <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 text-[9px] font-bold text-white px-2 py-1 rounded-full bg-black/35 backdrop-blur-sm">
+          <LucideIcon name="Zap" size={9} className="fill-current" />
+          {product.deliveryTime || 'Instant'}
+        </span>
       </div>
 
       {/* Content */}
       <div className="flex flex-col flex-1 p-4">
-        <h3 className="font-extrabold text-sm text-neutral-800 group-hover:text-violet-600 transition-colors leading-tight mb-1">
+        <h3 className="font-extrabold text-[15px] text-slate-900 group-hover:text-brand-600 transition-colors leading-tight mb-1">
           {product.name}
         </h3>
-        <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed mb-3 flex-1">
+        <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-3 flex-1">
           {product.shortDescription}
         </p>
 
         {/* Price */}
-        <div className="flex items-baseline gap-1.5 mb-1">
-          <span className="text-lg font-black text-rose-600">₹{product.monthlyPrice.toFixed(0)}</span>
-          <span className="text-[10px] text-neutral-400 font-semibold">/month</span>
+        <div className="flex items-baseline gap-1.5 mb-3">
+          <span className="text-xl font-black text-slate-900">₹{product.monthlyPrice.toFixed(0)}</span>
+          <span className="text-[10px] text-slate-400 font-semibold">/month</span>
           {product.originalPrice > product.monthlyPrice && (
-            <span className="text-xs text-neutral-400 line-through">₹{product.originalPrice.toFixed(0)}</span>
+            <span className="text-xs text-slate-400 line-through ml-auto">₹{product.originalPrice.toFixed(0)}</span>
           )}
-        </div>
-        <div className="flex items-center gap-1.5 text-[10px] font-bold text-teal-600 mb-4">
-          <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
-          {product.deliveryTime}
         </div>
 
         {/* Buttons */}
         <Link
           to={`/products/${product.slug}`}
-          className="w-full py-2.5 text-center font-bold text-xs rounded-xl bg-violet-600 hover:bg-violet-700 text-white transition-all shadow-sm mb-2"
+          className="w-full py-2.5 text-center font-bold text-xs rounded-xl bg-brand-600 hover:bg-brand-700 text-white transition-all shadow-sm shadow-brand-500/20 mb-2 flex items-center justify-center gap-1.5"
         >
-          Buy Now
+          Get {product.name.split(' ')[0]}
+          <LucideIcon name="ArrowRight" size={13} strokeWidth={2.5} />
         </Link>
         <a
           href={waUrl}
