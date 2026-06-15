@@ -72,17 +72,17 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group flex flex-col rounded-2xl bg-surface border border-line/80 hover:border-brand-500/40 hover:shadow-2xl hover:shadow-brand-900/30 hover:-translate-y-1 transition-all duration-300 p-4">
 
-      {/* Image box — square neutral panel with subtle brand glow (reference style) */}
-      <div className="relative rounded-xl overflow-hidden mb-3 bg-gradient-to-br from-surface-3 to-surface-2 border border-line/50" style={{ aspectRatio: '1 / 1' }}>
+      {/* Image box — compact landscape panel with subtle brand glow (reference style) */}
+      <div className="relative rounded-xl overflow-hidden mb-3 bg-gradient-to-br from-surface-3 to-surface-2 border border-line/50" style={{ aspectRatio: '4 / 3' }}>
         {/* soft product-colored glow behind the image */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 50% 40%, ${colors.from}40, transparent 70%)` }} />
 
         {showImage ? (
           <img src={product.image} alt={product.name} onError={() => setImgError(true)}
-            className="absolute inset-0 w-full h-full object-contain p-8 group-hover:scale-105 transition-transform duration-500" />
+            className="absolute inset-0 w-full h-full object-contain p-5 group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-white/85 font-black select-none drop-shadow-lg" style={{ fontSize: 48, letterSpacing: '-2px' }}>{initials}</span>
+            <span className="text-white/85 font-black select-none drop-shadow-lg" style={{ fontSize: 40, letterSpacing: '-2px' }}>{initials}</span>
           </div>
         )}
 

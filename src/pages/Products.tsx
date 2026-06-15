@@ -163,7 +163,7 @@ export function Products() {
           <div className="lg:col-span-3">
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                {[...Array(6)].map((_, i) => <div key={i} className="rounded-2xl bg-surface border border-line animate-pulse" style={{ height: 420 }} />)}
+                {[...Array(6)].map((_, i) => <div key={i} className="rounded-2xl bg-surface border border-line animate-pulse" style={{ height: 380 }} />)}
               </div>
             ) : filtered.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
