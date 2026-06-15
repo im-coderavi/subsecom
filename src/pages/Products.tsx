@@ -27,20 +27,15 @@ export function Products() {
   const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'all');
   const [searchVal, setSearchVal] = useState(searchParams.get('search') || '');
   const [sortOption, setSortOption] = useState('popular');
-  const [priceRange, setPriceRange] = useState(50);
+  const [priceRange, setPriceRange] = useState(100000);
 
-  // Fetch all products from API once
   useEffect(() => {
     fetch('/api/products')
       .then((r) => r.json())
-      .then((d) => {
-        const mapped = (d.products ?? []).map((p: any) => ({ ...p, id: p._id ?? p.id }));
-        setAllProducts(mapped);
-      })
+      .then((d) => setAllProducts((d.products ?? []).map((p: any) => ({ ...p, id: p._id ?? p.id }))))
       .finally(() => setLoading(false));
   }, []);
 
-  // Sync URL params → state
   useEffect(() => {
     setActiveCategory(searchParams.get('category') || 'all');
     setSearchVal(searchParams.get('search') || '');
@@ -60,7 +55,7 @@ export function Products() {
     setSearchParams(p);
   };
 
-  const maxPrice = allProducts.length ? Math.ceil(Math.max(...allProducts.map(p => p.monthlyPrice))) : 50;
+  const maxPrice = allProducts.length ? Math.ceil(Math.max(...allProducts.map(p => p.monthlyPrice))) : 100000;
 
   const filtered = allProducts
     .filter((p) => {
@@ -78,32 +73,28 @@ export function Products() {
     });
 
   return (
-    <div className="w-full min-h-screen bg-[#F8F9FD] pt-28 pb-16 px-4 sm:px-6">
+    <div className="w-full min-h-screen pt-10 pb-16 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
         <div className="text-center mb-10 max-w-2xl mx-auto">
-          <span className="text-[10px] sm:text-xs font-extrabold text-violet-600 uppercase tracking-widest bg-violet-100/50 px-2.5 py-1 rounded-full">
+          <span className="text-[10px] sm:text-xs font-extrabold text-brand-400 uppercase tracking-widest bg-brand-500/10 border border-brand-500/20 px-3 py-1 rounded-full">
             Complete Marketplace Catalog
           </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-neutral-900 tracking-tight mt-3">
-            Premium AI Tool Subscriptions
-          </h1>
-          <p className="text-xs sm:text-sm text-neutral-400 mt-2 font-medium">
-            Search, select, and get instant login credentials within minutes.
-          </p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mt-3">Premium AI Subscriptions</h1>
+          <p className="text-sm text-slate-400 mt-2 font-medium">Search, select, and get instant login credentials within minutes.</p>
         </div>
 
         {/* Category strip */}
-        <div className="flex items-center overflow-x-auto gap-2 pb-4 mb-8 no-scrollbar border-b border-neutral-200/50">
+        <div className="flex items-center overflow-x-auto gap-2 pb-4 mb-8 no-scrollbar border-b border-line">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               onClick={() => handleCategorySelect(cat.id)}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap cursor-pointer ${
                 activeCategory === cat.id
-                  ? 'bg-violet-600 border-violet-600 text-white shadow-md'
-                  : 'bg-white border-neutral-100 text-neutral-600 hover:border-violet-200 hover:text-violet-600 shadow-sm'
+                  ? 'bg-brand-600 border-brand-600 text-white shadow-lg shadow-brand-500/25'
+                  : 'bg-surface border-line text-slate-300 hover:border-brand-500/40 hover:text-brand-400'
               }`}
             >
               <LucideIcon name={cat.icon} size={13} />
@@ -116,34 +107,30 @@ export function Products() {
 
           {/* Sidebar filters */}
           <div className="space-y-5">
-            <div className="p-5 rounded-2xl bg-white border border-neutral-100 shadow-sm">
-              <h3 className="text-xs font-extrabold text-neutral-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-                <LucideIcon name="Search" size={12} className="text-violet-500" />
-                Search
+            <div className="p-5 rounded-2xl bg-surface border border-line">
+              <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <LucideIcon name="Search" size={12} className="text-brand-400" /> Search
               </h3>
               <form onSubmit={handleSearch} className="flex gap-2">
                 <input
-                  type="text"
-                  placeholder="ChatGPT, Midjourney..."
-                  value={searchVal}
+                  type="text" placeholder="ChatGPT, Midjourney..." value={searchVal}
                   onChange={(e) => setSearchVal(e.target.value)}
-                  className="bg-neutral-50 px-3 py-2 rounded-xl text-xs placeholder-neutral-400 border border-neutral-100 focus:bg-white focus:border-violet-400 focus:outline-none flex-1 font-medium"
+                  className="bg-surface-2 px-3 py-2 rounded-xl text-xs placeholder-slate-500 border border-line focus:border-brand-500 focus:outline-none flex-1 font-medium text-white"
                 />
-                <button type="submit" className="bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl px-3 flex items-center justify-center cursor-pointer">
+                <button type="submit" className="bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl px-3 flex items-center justify-center cursor-pointer">
                   <LucideIcon name="Search" size={12} />
                 </button>
               </form>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white border border-neutral-100 shadow-sm">
-              <h3 className="text-xs font-extrabold text-neutral-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-                <LucideIcon name="ArrowDownUp" size={12} className="text-violet-500" />
-                Sort By
+            <div className="p-5 rounded-2xl bg-surface border border-line">
+              <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <LucideIcon name="ArrowDownUp" size={12} className="text-brand-400" /> Sort By
               </h3>
               <select
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
-                className="w-full bg-neutral-50 px-3 py-2 rounded-xl text-xs border border-neutral-100 focus:outline-none focus:border-violet-400 font-bold text-neutral-700"
+                className="w-full bg-surface-2 px-3 py-2 rounded-xl text-xs border border-line focus:outline-none focus:border-brand-500 font-bold text-slate-200"
               >
                 <option value="popular">Most Popular</option>
                 <option value="price-asc">Price: Low to High</option>
@@ -152,26 +139,22 @@ export function Products() {
               </select>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white border border-neutral-100 shadow-sm">
-              <h3 className="text-xs font-extrabold text-neutral-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-                <LucideIcon name="SlidersHorizontal" size={12} className="text-violet-500" />
-                Max Price
+            <div className="p-5 rounded-2xl bg-surface border border-line">
+              <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-2">
+                <LucideIcon name="SlidersHorizontal" size={12} className="text-brand-400" /> Max Price
               </h3>
-              <div className="flex items-center justify-between text-xs font-bold text-neutral-500 mt-2 mb-3">
+              <div className="flex items-center justify-between text-xs font-bold text-slate-500 mt-2 mb-3">
                 <span>₹1</span>
-                <span className="text-rose-600 bg-rose-50 px-2 py-0.5 rounded font-extrabold">₹{priceRange}</span>
+                <span className="text-brand-300 bg-brand-500/10 px-2 py-0.5 rounded font-extrabold">₹{priceRange.toLocaleString('en-IN')}</span>
               </div>
               <input
-                type="range"
-                min="1"
-                max={maxPrice || 50}
-                value={priceRange}
+                type="range" min="1" max={maxPrice || 100000} value={priceRange}
                 onChange={(e) => setPriceRange(Number(e.target.value))}
-                className="w-full accent-violet-600 cursor-pointer"
+                className="w-full accent-brand-600 cursor-pointer"
               />
             </div>
 
-            <div className="text-xs text-neutral-400 font-semibold px-1">
+            <div className="text-xs text-slate-500 font-semibold px-1">
               {loading ? 'Loading…' : `${filtered.length} of ${allProducts.length} products`}
             </div>
           </div>
@@ -179,29 +162,23 @@ export function Products() {
           {/* Products grid */}
           <div className="lg:col-span-3">
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="rounded-2xl bg-white border border-neutral-100 shadow-sm animate-pulse" style={{ height: 320 }} />
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                {[...Array(6)].map((_, i) => <div key={i} className="rounded-2xl bg-surface border border-line animate-pulse" style={{ height: 420 }} />)}
               </div>
             ) : filtered.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {filtered.map((p) => (
-                  <ProductCard key={p.id || p.slug} product={p} whatsappNumber={whatsappNumber} />
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                {filtered.map((p) => <ProductCard key={p.id || p.slug} product={p} whatsappNumber={whatsappNumber} />)}
               </div>
             ) : (
-              <div className="p-16 rounded-3xl bg-white border border-neutral-100 text-center flex flex-col items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-neutral-50 flex items-center justify-center text-neutral-400">
+              <div className="p-16 rounded-3xl bg-surface border border-line text-center flex flex-col items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-surface-3 flex items-center justify-center text-slate-500">
                   <LucideIcon name="FolderOpen" size={28} />
                 </div>
-                <h3 className="font-extrabold text-base text-neutral-800">No products found</h3>
-                <p className="text-xs text-neutral-400 max-w-sm font-semibold">
-                  Try resetting your filters or search query.
-                </p>
+                <h3 className="font-extrabold text-base text-white">No products found</h3>
+                <p className="text-xs text-slate-400 max-w-sm font-semibold">Try resetting your filters or search query.</p>
                 <button
-                  onClick={() => { handleCategorySelect('all'); setSearchVal(''); setPriceRange(50); }}
-                  className="px-6 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-xs font-extrabold rounded-xl cursor-pointer"
+                  onClick={() => { handleCategorySelect('all'); setSearchVal(''); setPriceRange(100000); }}
+                  className="px-6 py-2 bg-surface-3 hover:bg-surface-2 border border-line text-slate-200 text-xs font-extrabold rounded-xl cursor-pointer"
                 >
                   Reset Filters
                 </button>
