@@ -72,16 +72,17 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group flex flex-col rounded-2xl bg-surface border border-line/80 hover:border-brand-500/40 hover:shadow-2xl hover:shadow-brand-900/30 hover:-translate-y-1 transition-all duration-300 p-4">
 
-      {/* Image tile with overlaid badges + category */}
-      <div className="relative rounded-xl overflow-hidden mb-4" style={{ aspectRatio: '5 / 4', background: `linear-gradient(135deg, ${colors.from}, ${colors.to})` }}>
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 55%)' }} />
+      {/* Image box — neutral raised panel with subtle brand glow (reference style) */}
+      <div className="relative rounded-xl overflow-hidden mb-4 bg-gradient-to-br from-surface-3 to-surface-2 border border-line/60" style={{ aspectRatio: '5 / 4' }}>
+        {/* soft product-colored glow behind the image */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 50% 38%, ${colors.from}40, transparent 68%)` }} />
 
         {showImage ? (
           <img src={product.image} alt={product.name} onError={() => setImgError(true)}
-            className="absolute inset-0 w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-500" />
+            className="absolute inset-0 w-full h-full object-contain p-7 group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-white font-black select-none drop-shadow-lg" style={{ fontSize: 48, letterSpacing: '-2px' }}>{initials}</span>
+            <span className="text-white/85 font-black select-none drop-shadow-lg" style={{ fontSize: 46, letterSpacing: '-2px' }}>{initials}</span>
           </div>
         )}
 

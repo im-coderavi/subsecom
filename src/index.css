@@ -24,13 +24,13 @@
   --color-brand-800: #1a5fb8;
   --color-brand-900: #15375f;
 
-  /* DARK SURFACES — slate navy (matches reference #1D2736 tone) */
-  --color-page:      #182029;  /* page bg */
-  --color-surface:   #1d2736;  /* card */
-  --color-surface-2: #161d26;  /* darker panel / inputs */
-  --color-surface-3: #28323f;  /* hover / raised */
-  --color-line:      #303a48;  /* borders */
-  --color-ink:       #131a22;
+  /* DARK SURFACES — lighter slate navy (#313F56 tone) */
+  --color-page:      #2a3649;  /* page bg */
+  --color-surface:   #313f56;  /* card */
+  --color-surface-2: #232e40;  /* darker panel / inputs */
+  --color-surface-3: #3b4a64;  /* image box / hover / raised */
+  --color-line:      #45546f;  /* borders */
+  --color-ink:       #1c2533;
 
   /* ACCENTS */
   --color-gold: #f5b73d;       /* "Featured" star */
@@ -44,9 +44,9 @@ body {
 
 /* Webkit scrollbars — dark */
 ::-webkit-scrollbar { width: 9px; height: 9px; }
-::-webkit-scrollbar-track { background: #182029; }
-::-webkit-scrollbar-thumb { background: #303a48; border-radius: 99px; border: 2px solid #182029; }
-::-webkit-scrollbar-thumb:hover { background: #3e4a5c; }
+::-webkit-scrollbar-track { background: #2a3649; }
+::-webkit-scrollbar-thumb { background: #45546f; border-radius: 99px; border: 2px solid #2a3649; }
+::-webkit-scrollbar-thumb:hover { background: #56678a; }
 
 /* Grid overlay decorator */
 .bg-grid-pattern {
