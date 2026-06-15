@@ -51,7 +51,7 @@ export function FeatureCarousel({ products, whatsappNumber }: Props) {
       </button>
 
       {/* card */}
-      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${grad} border border-white/10 shadow-2xl shadow-black/40`}>
+      <div className={`running-border relative overflow-hidden rounded-3xl bg-gradient-to-br ${grad} border border-white/10 shadow-2xl shadow-black/40`}>
         <div className="absolute -top-16 -right-10 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -left-10 w-80 h-80 rounded-full bg-black/30 blur-3xl pointer-events-none" />
 

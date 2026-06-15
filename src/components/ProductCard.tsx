@@ -70,7 +70,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const showImage = product.image && !imgError;
 
   return (
-    <div className="running-border group flex flex-col rounded-2xl bg-surface border border-line/80 hover:shadow-2xl hover:shadow-brand-900/30 hover:-translate-y-1 transition-all duration-300 p-4">
+    <div className="group flex flex-col rounded-2xl bg-surface border border-line/80 hover:border-brand-500/40 hover:shadow-2xl hover:shadow-brand-900/30 hover:-translate-y-1 transition-all duration-300 p-4">
 
       {/* Image box — compact landscape panel with subtle brand glow (reference style) */}
       <div className="relative rounded-xl overflow-hidden mb-3 bg-gradient-to-br from-surface-3 to-surface-2 border border-line/50" style={{ aspectRatio: '4 / 3' }}>

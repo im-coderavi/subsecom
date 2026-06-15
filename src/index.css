@@ -98,9 +98,10 @@ body {
     from var(--border-angle),
     transparent 0deg,
     transparent 250deg,
-    #2e90fa 310deg,
-    #93c5fd 335deg,
-    #2e90fa 360deg
+    rgba(255,255,255,0.95) 318deg,
+    #bfe0ff 335deg,
+    #2e90fa 352deg,
+    transparent 360deg
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
           mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
