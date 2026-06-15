@@ -72,33 +72,34 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group flex flex-col rounded-2xl bg-surface border border-line/80 hover:border-brand-500/40 hover:shadow-2xl hover:shadow-brand-900/30 hover:-translate-y-1 transition-all duration-300 p-4">
 
-      {/* Image box — neutral raised panel with subtle brand glow (reference style) */}
-      <div className="relative rounded-xl overflow-hidden mb-4 bg-gradient-to-br from-surface-3 to-surface-2 border border-line/60" style={{ aspectRatio: '5 / 4' }}>
+      {/* Image box — square neutral panel with subtle brand glow (reference style) */}
+      <div className="relative rounded-xl overflow-hidden mb-3 bg-gradient-to-br from-surface-3 to-surface-2 border border-line/50" style={{ aspectRatio: '1 / 1' }}>
         {/* soft product-colored glow behind the image */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 50% 38%, ${colors.from}40, transparent 68%)` }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 50% 40%, ${colors.from}40, transparent 70%)` }} />
 
         {showImage ? (
           <img src={product.image} alt={product.name} onError={() => setImgError(true)}
-            className="absolute inset-0 w-full h-full object-contain p-7 group-hover:scale-105 transition-transform duration-500" />
+            className="absolute inset-0 w-full h-full object-contain p-8 group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-white/85 font-black select-none drop-shadow-lg" style={{ fontSize: 46, letterSpacing: '-2px' }}>{initials}</span>
+            <span className="text-white/85 font-black select-none drop-shadow-lg" style={{ fontSize: 48, letterSpacing: '-2px' }}>{initials}</span>
           </div>
         )}
 
         {/* Featured (top-left) */}
-        <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 text-[10px] font-extrabold text-slate-100 px-2 py-1 rounded-md bg-black/55 backdrop-blur-sm">
+        <span className="absolute top-3 left-3 inline-flex items-center gap-1 text-[10px] font-extrabold text-slate-100 px-2 py-1 rounded-md bg-black/55 backdrop-blur-sm">
           <LucideIcon name="Star" size={10} className="fill-gold text-gold" /> Featured
         </span>
         {/* OFF (top-right) */}
         {discount > 0 && (
-          <span className="absolute top-2.5 right-2.5 text-[10px] font-extrabold px-2 py-1 rounded-md bg-brand-600/90 text-white backdrop-blur-sm shadow-sm">-{discount}% OFF</span>
+          <span className="absolute top-3 right-3 text-[10px] font-extrabold px-2 py-1 rounded-md bg-brand-600/90 text-white backdrop-blur-sm shadow-sm">-{discount}% OFF</span>
         )}
-        {/* Category (bottom-left) */}
-        <span className="absolute bottom-2.5 left-2.5 text-[10px] font-bold text-slate-200 px-2.5 py-1 rounded-md bg-black/55 backdrop-blur-sm">
-          {CATEGORY_LABEL[product.category] ?? product.category}
-        </span>
       </div>
+
+      {/* Category — below the image box (on card bg) */}
+      <span className="self-start text-[10px] font-bold text-slate-300 px-2.5 py-1 rounded-md bg-surface-3 border border-line mb-3">
+        {CATEGORY_LABEL[product.category] ?? product.category}
+      </span>
 
       {/* Name + desc */}
       <h3 className="font-extrabold text-[17px] text-white leading-tight mb-1.5 group-hover:text-brand-400 transition-colors line-clamp-1">{product.name}</h3>
