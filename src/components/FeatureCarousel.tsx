@@ -42,11 +42,11 @@ export function FeatureCarousel({ products, whatsappNumber }: Props) {
 
   return (
     <div className="relative" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-      {/* side chevrons */}
-      <button onClick={prev} aria-label="Previous" className="absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[#111927]/80 hover:bg-[#111927] border border-line text-white flex items-center justify-center backdrop-blur transition-colors">
+      {/* side chevrons — hidden on mobile (use dots / swipe instead) */}
+      <button onClick={prev} aria-label="Previous" className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[#161e28]/80 hover:bg-[#161e28] border border-line text-white hidden sm:flex items-center justify-center backdrop-blur transition-colors">
         <LucideIcon name="ChevronLeft" size={18} />
       </button>
-      <button onClick={next} aria-label="Next" className="absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[#111927]/80 hover:bg-[#111927] border border-line text-white flex items-center justify-center backdrop-blur transition-colors">
+      <button onClick={next} aria-label="Next" className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[#161e28]/80 hover:bg-[#161e28] border border-line text-white hidden sm:flex items-center justify-center backdrop-blur transition-colors">
         <LucideIcon name="ChevronRight" size={18} />
       </button>
 
@@ -69,7 +69,7 @@ export function FeatureCarousel({ products, whatsappNumber }: Props) {
           </div>
         </div>
 
-        <div className="relative p-7 sm:p-10 md:p-12 min-h-[400px] flex flex-col">
+        <div className="relative p-6 sm:p-10 md:p-12 h-[320px] sm:h-[380px] md:h-[400px] lg:h-[420px] flex flex-col justify-center">
           {/* tags top */}
           <div className="flex items-center gap-2 mb-6">
             <span className="text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/15 text-white backdrop-blur-sm">
@@ -81,9 +81,9 @@ export function FeatureCarousel({ products, whatsappNumber }: Props) {
           </div>
 
           {/* name + tagline */}
-          <div className="flex-1 max-w-lg">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.02] mb-3">{p.name}</h2>
-            <p className="text-base sm:text-lg text-white/80 font-medium mb-7 line-clamp-2">{p.shortDescription}</p>
+          <div className="max-w-lg">
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.05] mb-2.5">{p.name}</h2>
+            <p className="text-sm sm:text-lg text-white/80 font-medium mb-5 sm:mb-7 line-clamp-2">{p.shortDescription}</p>
 
             {/* buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">

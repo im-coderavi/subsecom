@@ -24,13 +24,13 @@
   --color-brand-800: #1a5fb8;
   --color-brand-900: #15375f;
 
-  /* DARK SURFACES — exact reference tones (LAB-matched) */
-  --color-page:      #0e1521;  /* --background  (lab L15) */
-  --color-surface:   #161f2e;  /* --card        (lab L21) */
-  --color-surface-2: #111927;  /* darker insets / inputs */
-  --color-surface-3: #1d2634;  /* --secondary/muted (lab L26) — raised/hover/image box */
-  --color-line:      #2a3442;  /* --border (~white 12%) */
-  --color-ink:       #0b1019;
+  /* DARK SURFACES — exact reference tones (LAB-converted to sRGB) */
+  --color-page:      #1d2732;  /* --background  lab(15) */
+  --color-surface:   #283441;  /* --card        lab(21) */
+  --color-surface-2: #1f2935;  /* inputs / insets (between page & card) */
+  --color-surface-3: #323e4c;  /* --secondary/muted lab(26) — raised/hover/image box */
+  --color-line:      #3a4654;  /* --border (~white 12%) */
+  --color-ink:       #161e28;  /* darkest band (footer / announcement) */
 
   /* ACCENTS */
   --color-gold: #f5b73d;       /* "Featured" star */
@@ -44,9 +44,9 @@ body {
 
 /* Webkit scrollbars — dark */
 ::-webkit-scrollbar { width: 9px; height: 9px; }
-::-webkit-scrollbar-track { background: #0e1521; }
-::-webkit-scrollbar-thumb { background: #2a3442; border-radius: 99px; border: 2px solid #0e1521; }
-::-webkit-scrollbar-thumb:hover { background: #3a4658; }
+::-webkit-scrollbar-track { background: #1d2732; }
+::-webkit-scrollbar-thumb { background: #3a4654; border-radius: 99px; border: 2px solid #1d2732; }
+::-webkit-scrollbar-thumb:hover { background: #4a5870; }
 
 /* Grid overlay decorator */
 .bg-grid-pattern {
@@ -109,9 +109,10 @@ body {
           mask-composite: exclude;
   animation: border-spin 4.5s linear infinite;
   pointer-events: none;
-  z-index: 1;
+  /* ring is masked to only the 1.5px edge (interior transparent), so it can sit
+     above content without covering it — and we never touch children's positioning */
+  z-index: 3;
 }
-.running-border > * { position: relative; z-index: 2; }
 
 @media (prefers-reduced-motion: reduce) {
   .running-border::before { animation: none; }

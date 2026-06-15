@@ -68,7 +68,7 @@ export function Home() {
     <div className="w-full relative overflow-x-hidden">
 
       {/* ───────── HERO ───────── */}
-      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-4">
+      <section className="relative max-w-4xl mx-auto px-4 sm:px-6 pt-5 sm:pt-10 pb-4">
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-brand-600/10 blur-[140px] pointer-events-none -z-10" />
         <div className="flex justify-center mb-6">
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-line text-xs font-bold text-slate-300">
