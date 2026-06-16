@@ -1,5 +1,5 @@
+import 'dotenv/config';
 import express from 'express';
-import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
 import { connectDB } from './_lib/config/db';
 import { Bundle } from './_lib/models/Bundle';
@@ -10,8 +10,6 @@ import promoRoutes from './_lib/routes/promo';
 import adminRoutes from './_lib/routes/admin';
 import settingsRoutes from './_lib/routes/settings';
 import bundleRoutes from './_lib/routes/bundles';
-
-dotenv.config();
 
 const app = express();
 

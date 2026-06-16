@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { LucideIcon } from './LucideIcon';
 import { Product } from '../types';
@@ -27,6 +27,24 @@ export function FeatureCarousel({ products, whatsappNumber }: Props) {
   const next = useCallback(() => setIndex((i) => (i + 1) % items.length), [items.length]);
   const prev = () => setIndex((i) => (i - 1 + items.length) % items.length);
 
+  // Touch swipe (mobile)
+  const touchStartX = useRef(0);
+  const touchDeltaX = useRef(0);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+    setPaused(true);
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+  };
+  const onTouchEnd = () => {
+    if (touchDeltaX.current < -45) next();
+    else if (touchDeltaX.current > 45) prev();
+    setPaused(false);
+  };
+
   useEffect(() => {
     if (paused || items.length <= 1) return;
     const t = setInterval(next, 4500);
@@ -51,7 +69,12 @@ export function FeatureCarousel({ products, whatsappNumber }: Props) {
       </button>
 
       {/* card */}
-      <div className={`running-border relative overflow-hidden rounded-3xl bg-gradient-to-br ${grad} border border-white/10 shadow-2xl shadow-black/40`}>
+      <div
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        className={`running-border relative overflow-hidden rounded-3xl bg-gradient-to-br ${grad} border border-white/10 shadow-2xl shadow-black/40 select-none touch-pan-y`}
+      >
         <div className="absolute -top-16 -right-10 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -left-10 w-80 h-80 rounded-full bg-black/30 blur-3xl pointer-events-none" />
 

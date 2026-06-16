@@ -28,6 +28,7 @@ export function Products() {
   const [searchVal, setSearchVal] = useState(searchParams.get('search') || '');
   const [sortOption, setSortOption] = useState('popular');
   const [priceRange, setPriceRange] = useState(100000);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/products')
@@ -86,12 +87,12 @@ export function Products() {
         </div>
 
         {/* Category strip */}
-        <div className="flex items-center overflow-x-auto gap-2 pb-4 mb-8 no-scrollbar border-b border-line">
+        <div className="flex items-center overflow-x-auto gap-2 pb-4 mb-6 sm:mb-8 no-scrollbar border-b border-line -mx-4 px-4 sm:mx-0 sm:px-0">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               onClick={() => handleCategorySelect(cat.id)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap cursor-pointer ${
                 activeCategory === cat.id
                   ? 'bg-brand-600 border-brand-600 text-white shadow-lg shadow-brand-500/25'
                   : 'bg-surface border-line text-slate-300 hover:border-brand-500/40 hover:text-brand-400'
@@ -103,10 +104,23 @@ export function Products() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Mobile filters toggle */}
+        <button
+          onClick={() => setFiltersOpen((o) => !o)}
+          className="lg:hidden mb-4 flex w-full items-center justify-between rounded-2xl bg-surface border border-line px-4 py-3 text-sm font-bold text-slate-200"
+        >
+          <span className="flex items-center gap-2">
+            <LucideIcon name="SlidersHorizontal" size={15} className="text-brand-400" />
+            Filters &amp; Sort
+            <span className="text-xs font-semibold text-slate-500">({loading ? '…' : filtered.length})</span>
+          </span>
+          <LucideIcon name="ChevronDown" size={16} className={`text-slate-400 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} />
+        </button>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
 
           {/* Sidebar filters */}
-          <div className="space-y-5">
+          <div className={`${filtersOpen ? 'grid' : 'hidden'} grid-cols-1 sm:grid-cols-2 gap-4 lg:block lg:space-y-5 lg:gap-0`}>
             <div className="p-5 rounded-2xl bg-surface border border-line">
               <h3 className="text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
                 <LucideIcon name="Search" size={12} className="text-brand-400" /> Search

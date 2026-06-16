@@ -1,5 +1,4 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 
 import mongoose from 'mongoose';
 import { connectDB } from '../api/_lib/config/db';
@@ -20,6 +19,7 @@ const products = [
     features: ['200K Tokens Context Window', 'Advanced Coding & Reasoning Abilities', 'Claude Artifacts Access', 'No Message Cap limits', 'Dedicated Customer Support Escalation'],
     deliveryMethod: 'Shared Premium Access + Account Credentials provided via dashboard in 2-5 min.',
     rating: 4.9, ratingCount: 348,
+    frequentlyBoughtTogether: ['chatgpt-plus', 'gemini-pro', 'cursor-pro'],
   },
   {
     name: 'ChatGPT Plus', slug: 'chatgpt-plus', badge: 'Popular', category: 'chat',
@@ -31,6 +31,7 @@ const products = [
     features: ['Access to GPT-4o and o1-pro models', 'DALL-E 3 Image Generation built-in', 'Custom GPT Explorers & Builders', 'Advanced Voice Mode', 'Web-browsing and coding sandbox tools'],
     deliveryMethod: 'Chrome Extension Auth Token / Direct Username and Password.',
     rating: 4.8, ratingCount: 512,
+    frequentlyBoughtTogether: ['claude-3-5', 'gemini-pro', 'midjourney'],
   },
   {
     name: 'Gemini Advanced', slug: 'gemini-pro', badge: 'Trending', category: 'chat',
@@ -42,6 +43,7 @@ const products = [
     features: ['1 Million+ tokens context size', 'Google Workspace integrations built-in', 'Fast response times & priority processing', 'Next-generation voice interactive mode', 'Multimodal reading (photos, videos, docs)'],
     deliveryMethod: 'Exclusive Sub-account / Shared workspace access with isolated private chat sessions.',
     rating: 4.7, ratingCount: 195,
+    frequentlyBoughtTogether: ['chatgpt-plus', 'claude-3-5', 'notion-ai'],
   },
   {
     name: 'Midjourney Pro', slug: 'midjourney', badge: 'Top Pick', category: 'image',
@@ -53,6 +55,7 @@ const products = [
     features: ['Fast Image Generation Hours', 'Stealth Mode', 'Parallel Generation (up to 12 jobs)', 'Access both Discord and Web visual editor', 'Commercial utilization rights'],
     deliveryMethod: 'Discord Shared Workspace Premium Bot channel or authenticated Web portal mirror access.',
     rating: 4.9, ratingCount: 420,
+    frequentlyBoughtTogether: ['chatgpt-plus', 'dall-e-3', 'cursor-pro'],
   },
   {
     name: 'Cursor Pro', slug: 'cursor-pro', badge: 'Developer', category: 'code',

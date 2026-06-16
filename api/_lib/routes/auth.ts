@@ -3,12 +3,12 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 import { protect, AuthRequest } from '../middleware/auth';
 import { createError } from '../middleware/errorHandler';
+import { requireEnv } from '../config/env';
 
 const router = Router();
 
 function signToken(userId: string, email: string, role: string): string {
-  const secret = process.env.JWT_SECRET!;
-  return jwt.sign({ userId, email, role }, secret, { expiresIn: '30d' });
+  return jwt.sign({ userId, email, role }, requireEnv('JWT_SECRET'), { expiresIn: '30d' });
 }
 
 // POST /api/auth/register

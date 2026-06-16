@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { FeatureCarousel } from '../components/FeatureCarousel';
 import { ProductCard } from '../components/ProductCard';
@@ -8,9 +8,9 @@ import { useSettingsStore } from '../store/useSettingsStore';
 import { Product } from '../types';
 
 const STATS = [
-  { value: '99.9%', label: 'Success' },
-  { value: '5 Min', label: 'Delivery' },
-  { value: '24/7',  label: 'Support' },
+  { value: '500+', label: 'Products' },
+  { value: '10K+', label: 'Happy Customers' },
+  { value: '4.9★', label: 'Average Rating' },
 ];
 
 const CATEGORY_TILES = [
@@ -48,11 +48,27 @@ const PAY_METHODS = [
   { kind: 'rupay' }, { kind: 'crypto' }, { kind: 'ssl' },
 ];
 
+const HERO_ROTATING_TEXTS = [
+  'AI Tools',
+  'Premium Apps',
+  'Creative Assets',
+  'Instant Delivery',
+];
+
+const HERO_TEXT_GRADIENTS = [
+  'linear-gradient(90deg, #b9e0c7 0%, #c7d28f 48%, #f4d06f 100%)',
+  'linear-gradient(90deg, #8bd3ff 0%, #4ab0ff 52%, #a78bfa 100%)',
+  'linear-gradient(90deg, #f9c784 0%, #ff8fab 50%, #f97316 100%)',
+  'linear-gradient(90deg, #a7f3d0 0%, #34d399 48%, #60a5fa 100%)',
+];
+
 export function Home() {
   const whatsappNumber = useSettingsStore((s) => s.whatsapp_number);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [heroText, setHeroText] = useState('');
+  const [heroTone, setHeroTone] = useState(0);
 
   useEffect(() => {
     fetch('/api/products')
@@ -61,34 +77,153 @@ export function Home() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    let wordIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    const tick = () => {
+      const currentWord = HERO_ROTATING_TEXTS[wordIndex];
+      setHeroTone(wordIndex);
+
+      if (!deleting) {
+        charIndex += 1;
+        setHeroText(currentWord.slice(0, charIndex));
+
+        if (charIndex >= currentWord.length) {
+          deleting = true;
+          timeoutId = setTimeout(tick, 1200);
+          return;
+        }
+        timeoutId = setTimeout(tick, 85);
+        return;
+      }
+
+      charIndex -= 1;
+      setHeroText(currentWord.slice(0, Math.max(0, charIndex)));
+
+      if (charIndex <= 0) {
+        deleting = false;
+          wordIndex = (wordIndex + 1) % HERO_ROTATING_TEXTS.length;
+          setHeroTone(wordIndex);
+          timeoutId = setTimeout(tick, 260);
+          return;
+        }
+
+      timeoutId = setTimeout(tick, 45);
+    };
+
+    timeoutId = setTimeout(tick, 250);
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, []);
+
   const featured = allProducts.slice(0, 8);
   const trending = allProducts.slice(0, 8);
+  const communityUrl = whatsappNumber
+    ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi! I want to join the free community.')}`
+    : '/register';
 
   return (
     <div className="w-full relative overflow-x-hidden">
 
       {/* ───────── HERO ───────── */}
-      <section className="relative max-w-4xl mx-auto px-4 sm:px-6 pt-5 sm:pt-10 pb-4">
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-brand-600/10 blur-[140px] pointer-events-none -z-10" />
-        <div className="flex justify-center mb-6">
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-line text-xs font-bold text-slate-300">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Trusted by 15,000+ creators globally
-          </span>
+      <section className="relative mx-auto max-w-[1500px] px-4 sm:px-6 pt-16 sm:pt-20 pb-10 sm:pb-12 bg-[radial-gradient(circle_at_top,rgba(74,176,255,0.10),transparent_42%),radial-gradient(circle_at_80%_55%,rgba(34,197,94,0.08),transparent_22%),radial-gradient(circle_at_20%_75%,rgba(245,158,11,0.06),transparent_26%)]">
+
+        <div className="relative z-10 mx-auto max-w-5xl text-center">
+          <div className="mb-5 flex justify-center md:hidden">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold text-white/80 backdrop-blur-sm">
+              <span className="text-[#fbbf24]">✦</span>
+              #1 Digital Store in India
+            </span>
+          </div>
+
+          <div className="relative hidden md:flex items-center justify-center">
+            <span className="absolute -top-12 sm:-top-14 md:-top-16 left-1/2 -translate-x-1/2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-6 py-3 text-sm font-bold text-white/80 backdrop-blur-sm">
+              <span className="text-[#fbbf24]">✦</span>
+              #1 Digital Store in India
+            </span>
+            <span className="absolute -left-2 top-24 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-bold text-white/80 backdrop-blur-sm">
+              <span className="text-[#f59e0b]">✦</span>
+              AI Powered
+            </span>
+            <span className="absolute -right-2 top-24 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-bold text-white/80 backdrop-blur-sm">
+              <span className="text-[#38bdf8]">⚡</span>
+              Instant Delivery
+            </span>
+            <span className="absolute -left-8 bottom-8 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-bold text-white/80 backdrop-blur-sm">
+              <span className="text-[#f59e0b]">👑</span>
+              Premium
+            </span>
+            <span className="absolute -right-8 bottom-8 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-bold text-white/80 backdrop-blur-sm">
+              <span className="text-[#f59e0b]">☆</span>
+              5★ Rated
+            </span>
+          </div>
+
+          <h1 className="mt-2 text-4xl sm:text-5xl md:text-7xl font-black tracking-tight leading-[0.95] text-white">
+            <span className="bg-gradient-to-r from-[#f4d06f] via-[#ffb347] to-[#f08b8b] bg-clip-text text-transparent">Your Gateway to</span>
+            <br />
+            <span
+              className="inline-flex min-h-[1.1em] min-w-[7ch] justify-center bg-clip-text text-transparent"
+              style={{
+                backgroundImage: HERO_TEXT_GRADIENTS[heroTone % HERO_TEXT_GRADIENTS.length],
+                transition: 'background-image 280ms ease, opacity 280ms ease',
+              }}
+            >
+              {heroText || '\u00a0'}
+            </span>
+          </h1>
+
+          <p className="mx-auto mt-6 max-w-3xl text-base sm:text-lg md:text-xl leading-7 sm:leading-8 text-slate-300 px-2">
+            Get premium digital tools, software, and creative assets at unbeatable prices.
+            <br className="hidden sm:block" />
+            Instant delivery, lifetime access.
+          </p>
+          <p className="mt-3 text-sm sm:text-base font-semibold text-slate-500 px-2">
+            Trusted by 10,000+ creators and professionals worldwide.
+          </p>
+
+          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4">
+            <Link to="/products" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#43a5ff] px-6 sm:px-7 py-4 text-sm font-extrabold text-white shadow-[0_14px_32px_rgba(67,165,255,0.25)] transition-transform hover:scale-[1.02]">
+              Browse Products <LucideIcon name="ArrowRight" size={16} />
+            </Link>
+            <Link to="/admin" className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-6 sm:px-7 py-4 text-sm font-extrabold text-slate-200 backdrop-blur-sm transition-colors hover:bg-white/20">
+              <LucideIcon name="Crown" size={16} className="text-[#fbbf24]" />
+              Admin Profile
+            </Link>
+            <a href={communityUrl} target={communityUrl.startsWith('http') ? '_blank' : undefined} rel={communityUrl.startsWith('http') ? 'noopener noreferrer' : undefined} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#f0c14b] via-[#7ddc57] to-[#14b8a6] px-6 sm:px-7 py-4 text-sm font-extrabold text-white shadow-[0_14px_32px_rgba(20,184,166,0.18)] transition-transform hover:scale-[1.02]">
+              <LucideIcon name="MessageCircle" size={16} />
+              Join Free Community <LucideIcon name="ArrowRight" size={16} />
+            </a>
+          </div>
+
+          <div className="mx-auto mt-10 grid max-w-4xl grid-cols-1 gap-3 sm:grid-cols-3 px-2 sm:px-0">
+            {STATS.map((s) => (
+              <div key={s.label} className="rounded-2xl border border-white/10 bg-white/10 px-6 py-5 text-center backdrop-blur-sm">
+                <div className="text-3xl sm:text-[2rem] font-black tracking-tight text-white">{s.value}</div>
+                <div className="mt-1 text-sm font-semibold text-slate-400">{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-3 text-sm font-bold text-slate-200 backdrop-blur-sm">
+              <LucideIcon name="Star" size={15} className="fill-gold text-gold" />
+              Feedback
+              <span className="text-[#fbbf24]">✦</span>
+            </span>
+          </div>
         </div>
-        {loading
-          ? <div className="w-full h-[420px] rounded-3xl bg-surface border border-line animate-pulse" />
-          : <FeatureCarousel products={featured} whatsappNumber={whatsappNumber} />}
       </section>
 
-      {/* ───────── STATS ───────── */}
-      <section className="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-        <div className="grid grid-cols-3 divide-x divide-line">
-          {STATS.map((s) => (
-            <div key={s.label} className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">{s.value}</span>
-              <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mt-2">{s.label}</span>
-            </div>
-          ))}
+      <section className="relative mx-auto max-w-[1500px] px-4 sm:px-6 pb-14">
+        <div className="relative mx-auto max-w-5xl">
+          {loading
+            ? <div className="w-full h-[420px] rounded-3xl bg-surface border border-line animate-pulse" />
+            : <FeatureCarousel products={featured} whatsappNumber={whatsappNumber} />}
         </div>
       </section>
 
@@ -256,7 +391,7 @@ function PayCard({ kind }: { kind: string }) {
       </div>
     );
   }
-  const label: Record<string, JSX.Element> = {
+  const label: Record<string, ReactNode> = {
     visa:  <span className="text-[#1a1f71] font-black italic text-xl">VISA</span>,
     mc:    <span className="flex items-center"><span className="w-5 h-5 rounded-full bg-[#eb001b] -mr-2" /><span className="w-5 h-5 rounded-full bg-[#f79e1b]/90" /></span>,
     upi:   <span className="text-[#2e90fa] font-black text-lg">UPI</span>,

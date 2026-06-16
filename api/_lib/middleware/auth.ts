@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { createError } from './errorHandler';
+import { requireEnv } from '../config/env';
 
 export interface AuthRequest extends Request {
   userId?: string;
@@ -21,11 +22,9 @@ export function protect(req: AuthRequest, _res: Response, next: NextFunction): v
   }
 
   const token = header.split(' ')[1];
-  const secret = process.env.JWT_SECRET;
-  if (!secret) return next(createError('Server misconfiguration', 500));
 
   try {
-    const decoded = jwt.verify(token, secret) as JwtPayload;
+    const decoded = jwt.verify(token, requireEnv('JWT_SECRET')) as JwtPayload;
     req.userId = decoded.userId;
     req.userEmail = decoded.email;
     req.userRole = decoded.role;

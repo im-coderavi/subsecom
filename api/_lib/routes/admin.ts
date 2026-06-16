@@ -139,11 +139,22 @@ router.get('/products', async (_req: AuthRequest, res: Response, next: NextFunct
 router.post('/products', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { name, slug, logo, image, badge, category, shortDescription, description,
-      monthlyPrice, originalPrice, deliveryTime, features, deliveryMethod, rating, ratingCount } = req.body;
+      monthlyPrice, originalPrice, deliveryTime, features, deliveryMethod, rating, ratingCount, frequentlyBoughtTogether } = req.body;
 
     if (!name || !slug || !category || !monthlyPrice || !originalPrice) {
       return next(createError('Required fields: name, slug, category, monthlyPrice, originalPrice', 400));
     }
+
+    const normalizeList = (value: unknown) => {
+      if (Array.isArray(value)) return value.map((item) => String(item).trim().toLowerCase()).filter(Boolean);
+      if (typeof value === 'string') {
+        return value
+          .split(/[\n,]/)
+          .map((item) => String(item).trim().toLowerCase())
+          .filter(Boolean);
+      }
+      return [];
+    };
 
     const existing = await Product.findOne({ slug: slug.toLowerCase() });
     if (existing) return next(createError('A product with this slug already exists', 409));
@@ -154,6 +165,7 @@ router.post('/products', async (req: AuthRequest, res: Response, next: NextFunct
       deliveryTime: deliveryTime || 'Instant Delivery',
       features: features || [], deliveryMethod: deliveryMethod || '',
       rating: rating || 4.5, ratingCount: ratingCount || 0,
+      frequentlyBoughtTogether: normalizeList(frequentlyBoughtTogether),
     });
 
     res.status(201).json({ product });
@@ -165,7 +177,25 @@ router.post('/products', async (req: AuthRequest, res: Response, next: NextFunct
 // PUT update product
 router.put('/products/:id', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    const normalizeList = (value: unknown) => {
+      if (Array.isArray(value)) return value.map((item) => String(item).trim().toLowerCase()).filter(Boolean);
+      if (typeof value === 'string') {
+        return value
+          .split(/[\n,]/)
+          .map((item) => String(item).trim().toLowerCase())
+          .filter(Boolean);
+      }
+      return undefined;
+    };
+
+    const updateBody = {
+      ...req.body,
+      ...(req.body.frequentlyBoughtTogether !== undefined
+        ? { frequentlyBoughtTogether: normalizeList(req.body.frequentlyBoughtTogether) }
+        : {}),
+    };
+
+    const product = await Product.findByIdAndUpdate(req.params.id, updateBody, {
       new: true, runValidators: true,
     });
     if (!product) return next(createError('Product not found', 404));

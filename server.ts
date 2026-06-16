@@ -1,8 +1,8 @@
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
-import dotenv from 'dotenv';
 import { connectDB } from './api/_lib/config/db';
 import { Bundle } from './api/_lib/models/Bundle';
 import authRoutes from './api/_lib/routes/auth';
@@ -13,8 +13,6 @@ import adminRoutes from './api/_lib/routes/admin';
 import settingsRoutes from './api/_lib/routes/settings';
 import bundleRoutes from './api/_lib/routes/bundles';
 import { errorHandler } from './api/_lib/middleware/errorHandler';
-
-dotenv.config();
 
 async function startServer() {
   const app = express();

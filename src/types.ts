@@ -13,6 +13,7 @@ export interface Product {
   originalPrice: number;
   deliveryTime: string;
   features: string[];
+  frequentlyBoughtTogether?: string[];
   deliveryMethod: string;
   rating: number;
   ratingCount: number;

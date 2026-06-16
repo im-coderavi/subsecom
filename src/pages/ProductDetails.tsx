@@ -12,6 +12,7 @@ interface ApiProduct {
   category: string; shortDescription: string; description: string;
   monthlyPrice: number; originalPrice: number; plans?: PricingPlan[];
   deliveryTime: string; deliveryMethod: string; features: string[];
+  frequentlyBoughtTogether?: string[];
   rating: number; ratingCount: number;
 }
 
@@ -21,6 +22,50 @@ const WA_ICON = (
   </svg>
 );
 
+function ProductMedia({
+  image,
+  alt,
+  logo,
+  title,
+  category,
+  imageClassName,
+  fallbackClassName,
+  iconSize = 30,
+  iconStrokeWidth = 1.8,
+}: {
+  image?: string;
+  alt: string;
+  logo: string;
+  title: string;
+  category: string;
+  imageClassName: string;
+  fallbackClassName: string;
+  iconSize?: number;
+  iconStrokeWidth?: number;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (image && !failed) {
+    return <img src={image} alt={alt} className={imageClassName} onError={() => setFailed(true)} />;
+  }
+
+  return (
+    <div className={`${fallbackClassName} relative overflow-hidden`}>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.10),transparent_40%),linear-gradient(160deg,rgba(74,165,255,0.18),rgba(15,23,42,0.92))]" />
+      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-400 via-fuchsia-400 to-amber-400" />
+      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-2 px-2 text-center">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/15 bg-white/10 shadow-lg backdrop-blur-sm">
+          <LucideIcon name={logo} size={iconSize} strokeWidth={iconStrokeWidth} className="text-white/90" />
+        </div>
+        <div className="space-y-0.5">
+          <p className="max-w-[90px] text-[10px] font-black leading-tight text-white line-clamp-2">{title}</p>
+          <p className="text-[8px] font-bold uppercase tracking-[0.22em] text-white/45">{category}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ProductDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -28,6 +73,7 @@ export function ProductDetails() {
   const whatsappNumber = useSettingsStore((s) => s.whatsapp_number);
 
   const [product, setProduct] = useState<ApiProduct | null>(null);
+  const [allProducts, setAllProducts] = useState<ApiProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -54,9 +100,17 @@ export function ProductDetails() {
   useEffect(() => {
     if (!slug) return;
     setLoading(true);
-    fetch(`/api/products/${slug}`)
-      .then((r) => { if (r.status === 404) { setNotFound(true); return null; } return r.json(); })
-      .then((data) => { if (data) setProduct(data.product); })
+    setNotFound(false);
+    setImgError(false);
+    setSelectedPlanIdx(0);
+    Promise.all([
+      fetch(`/api/products/${slug}`).then((r) => { if (r.status === 404) { setNotFound(true); return null; } return r.json(); }),
+      fetch('/api/products').then((r) => r.json()),
+    ])
+      .then(([data, listData]) => {
+        if (data) setProduct(data.product);
+        setAllProducts((listData.products ?? []).map((p: any) => ({ ...p, _id: p._id ?? p.id })));
+      })
       .finally(() => setLoading(false));
   }, [slug]);
 
@@ -106,9 +160,56 @@ export function ProductDetails() {
     navigate('/checkout');
   };
 
+  const handleAddBundleToCart = () => {
+    const bundleItems = boughtTogether;
+    bundleItems.forEach((item) => {
+      addItem({
+        id: item._id,
+        slug: item.slug,
+        name: item.name,
+        logo: item.logo,
+        image: item.image,
+        badge: item.badge,
+        category: item.category,
+        shortDescription: item.shortDescription,
+        description: item.description,
+        monthlyPrice: item.monthlyPrice,
+        originalPrice: item.originalPrice,
+        deliveryTime: item.deliveryTime,
+        deliveryMethod: item.deliveryMethod,
+        features: item.features,
+        rating: item.rating,
+        ratingCount: item.ratingCount,
+      } as any);
+    });
+    navigate('/cart');
+  };
+
   const waNumber = whatsappNumber || '919999999999';
   const planLabel = selectedPlan.label ?? (selectedPlan.months === 1 ? '1 Month' : `${selectedPlan.months} Months`);
   const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(`Hi! I want to buy *${product.name}* — ${planLabel} plan at ₹${total}. Please share payment details.`)}`;
+
+  const relatedProducts = allProducts
+    .filter((p) => p.slug !== product.slug)
+    .sort((a, b) => {
+      const sameA = a.category === product.category ? 1 : 0;
+      const sameB = b.category === product.category ? 1 : 0;
+      if (sameA !== sameB) return sameB - sameA;
+      return b.rating - a.rating;
+    });
+  const resolveProduct = (value: string) => {
+    const normalized = value.trim().toLowerCase();
+    return allProducts.find((item) => item.slug.toLowerCase() === normalized || item.name.toLowerCase() === normalized);
+  };
+
+  const adminBoughtTogether = (product.frequentlyBoughtTogether ?? [])
+    .map(resolveProduct)
+    .filter((item): item is ApiProduct => Boolean(item) && item.slug !== product.slug);
+
+  const boughtTogether = [...adminBoughtTogether, ...relatedProducts]
+    .filter((item, index, arr) => arr.findIndex((candidate) => candidate.slug === item.slug) === index)
+    .slice(0, 3);
+  const alsoLike = relatedProducts.slice(0, 4);
 
   const reviews = [
     { name: 'Rahul S.', role: 'Full Stack Dev', date: '2 days ago', body: `Works perfectly! Got my ${product.name} credentials in under 2 minutes. Highly recommend.`, score: 5 },
@@ -379,6 +480,132 @@ export function ProductDetails() {
             </div>
           </div>
         </div>
+
+        {boughtTogether.length > 0 && (
+          <section className="mt-10 rounded-3xl border border-line bg-surface p-5 sm:p-7 shadow-[0_12px_30px_rgba(0,0,0,0.25)]">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                <LucideIcon name="Sparkles" size={16} />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">Frequently Bought Together</h2>
+            </div>
+
+            <div className="rounded-2xl border border-line bg-surface-2 p-4 sm:p-5">
+              <div className="flex items-center justify-center gap-3 sm:gap-5 overflow-x-auto pb-2">
+                {boughtTogether.map((item, index) => (
+                  <div key={item.slug} className="flex items-center gap-3 sm:gap-5 flex-shrink-0">
+                    <div className="flex flex-col items-center gap-2">
+                      {/* Blank image box — admin panel se product image yahan lagegi */}
+                      <div className="h-28 w-24 rounded-[18px] border border-line bg-surface-3 shadow-[0_10px_24px_rgba(0,0,0,0.25)]" />
+                      <span className="flex min-h-[2.2rem] max-w-[104px] items-start justify-center text-center text-[12px] font-bold text-white leading-snug line-clamp-2">{item.name}</span>
+                    </div>
+                    {index < boughtTogether.length - 1 && (
+                      <span className="hidden sm:block text-2xl font-black text-slate-500">+</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5 border-t border-line pt-4">
+                <ul className="space-y-3">
+                  {boughtTogether.map((item) => (
+                    <li key={item.slug} className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400 flex-shrink-0">
+                        <LucideIcon name="Check" size={12} strokeWidth={3} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-white">{item.name}</p>
+                      </div>
+                      <span className="text-sm font-black text-white">Rs {item.monthlyPrice.toLocaleString('en-IN')}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-5 flex flex-col gap-3 border-t border-line pt-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm font-medium text-slate-400">Bundle of 3 products</p>
+                  <button
+                    type="button"
+                    onClick={handleAddBundleToCart}
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#43a5ff] px-5 py-3 text-sm font-extrabold text-white shadow-[0_12px_24px_rgba(67,165,255,0.22)] transition-colors hover:bg-[#3399f6]"
+                  >
+                    <LucideIcon name="Heart" size={15} className="fill-current" />
+                    Add All to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {alsoLike.length > 0 && (
+          <section className="mt-12">
+            <div className="flex items-center gap-2 mb-5">
+              <LucideIcon name="Heart" size={18} className="text-[#f59e0b]" />
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">You Might Also Like</h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+              {alsoLike.map((item) => {
+                const itemDiscount = item.originalPrice > item.monthlyPrice
+                  ? Math.round(((item.originalPrice - item.monthlyPrice) / item.originalPrice) * 100)
+                  : 0;
+
+                return (
+                  <Link
+                    key={item.slug}
+                    to={`/products/${item.slug}`}
+                    className="group overflow-hidden rounded-[24px] border border-line bg-surface transition-all duration-300 hover:-translate-y-1 hover:border-brand-500/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.22)]"
+                  >
+                    <div className="relative h-[220px] bg-[#10172b]">
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent" />
+                      <div className="absolute left-3 top-3 inline-flex items-center rounded-full border border-white/10 bg-black/40 px-3 py-1 text-[10px] font-extrabold text-white/90 backdrop-blur-sm">
+                        {item.category}
+                      </div>
+                      {itemDiscount > 0 && (
+                        <div className="absolute right-3 top-3 rounded-2xl bg-[#43a5ff] px-3 py-1 text-[10px] font-black text-white">
+                          -{itemDiscount}% OFF
+                        </div>
+                      )}
+                      <div className="flex h-full items-center justify-center p-6">
+                        <ProductMedia
+                          image={item.image}
+                          alt={item.name}
+                          logo={item.logo}
+                          title={item.name}
+                          category={item.category}
+                          imageClassName="h-[120px] w-[88px] rounded-[3px] border border-white/90 object-contain bg-[#0a1020]"
+                          fallbackClassName="flex h-[120px] w-[88px] items-center justify-center rounded-2xl border border-white/15 bg-white/10"
+                          iconSize={28}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-4">
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-brand-400">{item.category}</p>
+                      <h3 className="mt-1 line-clamp-1 text-lg font-black text-white">{item.name}</h3>
+                      <p className="mt-2 line-clamp-2 text-sm text-slate-400 min-h-[2.5rem]">{item.shortDescription}</p>
+                      <div className="mt-4 flex items-end justify-between gap-3">
+                        <div>
+                          <div className="flex items-end gap-2">
+                            <span className="text-2xl font-black text-[#d8ecff]">Rs {item.monthlyPrice.toLocaleString('en-IN')}</span>
+                            <span className="pb-1 text-xs font-semibold text-slate-400">/ month</span>
+                          </div>
+                          {item.originalPrice > item.monthlyPrice && (
+                            <span className="text-xs text-slate-500 line-through">Rs {item.originalPrice.toLocaleString('en-IN')}</span>
+                          )}
+                        </div>
+                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold text-emerald-300">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                          Instant
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

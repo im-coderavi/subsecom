@@ -12,25 +12,25 @@
   --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  /* PRIMARY — sky / azure blue */
+  /* Primary sky blue palette */
   --color-brand-50:  #eff6ff;
   --color-brand-100: #dbeafe;
   --color-brand-200: #bfdbfe;
   --color-brand-300: #93c5fd;
-  --color-brand-400: #5bb8ff;
-  --color-brand-500: #3b9eff;
-  --color-brand-600: #2e90fa;  /* main */
-  --color-brand-700: #1e78e6;
-  --color-brand-800: #1a5fb8;
-  --color-brand-900: #15375f;
+  --color-brand-400: #68bfff;
+  --color-brand-500: #4fb0ff;
+  --color-brand-600: #43a5ff;
+  --color-brand-700: #2f8ef0;
+  --color-brand-800: #236dc7;
+  --color-brand-900: #153d70;
 
-  /* DARK SURFACES — exact reference tones (LAB-converted to sRGB) */
-  --color-page:      #1d2732;  /* --background  lab(15) */
-  --color-surface:   #283441;  /* --card        lab(21) */
-  --color-surface-2: #1f2935;  /* inputs / insets (between page & card) */
-  --color-surface-3: #323e4c;  /* --secondary/muted lab(26) — raised/hover/image box */
-  --color-line:      #3a4654;  /* --border (~white 12%) */
-  --color-ink:       #161e28;  /* darkest band (footer / announcement) */
+  /* Dark surfaces tuned to the reference card palette */
+  --color-page:      #1d2430;
+  --color-surface:   #283240;
+  --color-surface-2: #1f2734;
+  --color-surface-3: #323e4d;
+  --color-line:      #3a4656;
+  --color-ink:       #161e28;
 
   /* ACCENTS */
   --color-gold: #f5b73d;       /* "Featured" star */
@@ -38,15 +38,17 @@
 
 html { scroll-behavior: smooth; }
 body {
-  background: var(--color-page);
-  color: #cbd5e1;
+  background:
+    radial-gradient(1200px 540px at 50% -120px, rgba(74, 176, 255, 0.12), transparent 60%),
+    var(--color-page);
+  color: #d6dfeb;
 }
 
 /* Webkit scrollbars — dark */
 ::-webkit-scrollbar { width: 9px; height: 9px; }
-::-webkit-scrollbar-track { background: #1d2732; }
-::-webkit-scrollbar-thumb { background: #3a4654; border-radius: 99px; border: 2px solid #1d2732; }
-::-webkit-scrollbar-thumb:hover { background: #4a5870; }
+::-webkit-scrollbar-track { background: #1d2430; }
+::-webkit-scrollbar-thumb { background: #3a4656; border-radius: 99px; border: 2px solid #1d2430; }
+::-webkit-scrollbar-thumb:hover { background: #4e5d74; }
 
 /* Grid overlay decorator */
 .bg-grid-pattern {

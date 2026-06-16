@@ -20,6 +20,7 @@ export interface IProduct extends Document {
   plans: IPricingPlan[];
   deliveryTime: string;
   features: string[];
+  frequentlyBoughtTogether: string[];
   deliveryMethod: string;
   rating: number;
   ratingCount: number;
@@ -49,6 +50,7 @@ const ProductSchema = new Schema<IProduct>(
     }],
     deliveryTime: { type: String, required: true },
     features: [{ type: String }],
+    frequentlyBoughtTogether: [{ type: String, trim: true, lowercase: true }],
     deliveryMethod: { type: String, required: true },
     rating: { type: Number, default: 4.5, min: 0, max: 5 },
     ratingCount: { type: Number, default: 0 },

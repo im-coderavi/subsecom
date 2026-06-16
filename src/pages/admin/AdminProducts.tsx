@@ -23,6 +23,7 @@ interface AdminProduct {
   deliveryTime: string;
   deliveryMethod: string;
   features: string[];
+  frequentlyBoughtTogether?: string[];
 }
 
 const CATEGORIES = ['chat', 'code', 'image', 'video', 'voice', 'productivity', 'design', 'writing'];
@@ -31,6 +32,7 @@ const emptyForm = {
   name: '', slug: '', category: 'chat', badge: '', image: '', logo: 'Box',
   shortDescription: '', description: '', monthlyPrice: '', originalPrice: '',
   deliveryTime: 'Instant Delivery', deliveryMethod: '', features: '',
+  frequentlyBoughtTogether: '',
   rating: '4.5', ratingCount: '0',
 };
 
@@ -77,6 +79,7 @@ export function AdminProducts() {
       description: p.description, monthlyPrice: String(p.monthlyPrice),
       originalPrice: String(p.originalPrice), deliveryTime: p.deliveryTime,
       deliveryMethod: p.deliveryMethod, features: p.features.join('\n'),
+      frequentlyBoughtTogether: (p.frequentlyBoughtTogether ?? []).join('\n'),
       rating: String(p.rating), ratingCount: String(p.ratingCount),
     });
     setError('');
@@ -109,6 +112,7 @@ export function AdminProducts() {
       rating: Number(form.rating),
       ratingCount: Number(form.ratingCount),
       features: form.features.split('\n').map((f) => f.trim()).filter(Boolean),
+      frequentlyBoughtTogether: form.frequentlyBoughtTogether.split('\n').map((f) => f.trim().toLowerCase()).filter(Boolean),
       plans: plans
         .filter((pl) => pl.months && pl.price)
         .map((pl) => ({ months: Number(pl.months), price: Number(pl.price) })),
@@ -317,6 +321,22 @@ export function AdminProducts() {
                   >
                     {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-[10px] font-extrabold text-neutral-500 uppercase tracking-wider mb-1">
+                    Frequently Bought Together Slugs
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={form.frequentlyBoughtTogether}
+                    onChange={(e) => setForm((f) => ({ ...f, frequentlyBoughtTogether: e.target.value }))}
+                    placeholder={"chatgpt-plus\nclaude-3-5\ngemini-pro"}
+                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-xs font-bold text-white placeholder-neutral-600 focus:outline-none focus:border-violet-500 resize-none"
+                  />
+                  <p className="mt-1 text-[9px] text-neutral-600 font-medium">
+                    Enter product slugs, one per line. These products will appear in the Frequently Bought Together section.
+                  </p>
                 </div>
               </div>
 
