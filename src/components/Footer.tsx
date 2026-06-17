@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { LucideIcon } from './LucideIcon';
+import { BrandLogo } from './BrandLogo';
 import { useSettingsStore } from '../store/useSettingsStore';
 
 export function Footer() {
@@ -24,14 +25,8 @@ export function Footer() {
 
           {/* Brand */}
           <div className="flex flex-col gap-5">
-            <Link to="/" className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30">
-                <span className="text-white font-black text-sm tracking-tighter italic">AI</span>
-              </div>
-              <div className="flex flex-col leading-none">
-                <span className="font-extrabold text-lg text-white tracking-tight">AI Nest</span>
-                <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.3em]">Premium</span>
-              </div>
+            <Link to="/">
+              <BrandLogo size="md" />
             </Link>
             <p className="text-sm leading-relaxed text-slate-400 max-w-xs">
               Your trusted destination for premium AI subscriptions. Instant delivery, secure payment, full warranty.

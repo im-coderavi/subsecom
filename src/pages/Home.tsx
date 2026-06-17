@@ -239,7 +239,7 @@ export function Home() {
             View all <LucideIcon name="ArrowRight" size={15} strokeWidth={2.5} />
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-5">
           {loading
             ? [...Array(8)].map((_, i) => <div key={i} className="rounded-2xl bg-surface border border-line animate-pulse" style={{ height: 380 }} />)
             : featured.map((p) => <ProductCard key={p.id || p.slug} product={p} whatsappNumber={whatsappNumber} />)}
@@ -258,7 +258,7 @@ export function Home() {
             View all trending products <LucideIcon name="ArrowRight" size={15} strokeWidth={2.5} />
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-5">
           {loading
             ? [...Array(4)].map((_, i) => <div key={i} className="rounded-2xl bg-surface border border-line animate-pulse" style={{ height: 380 }} />)
             : trending.slice(0, 4).map((p) => <ProductCard key={`t-${p.id || p.slug}`} product={p} whatsappNumber={whatsappNumber} />)}

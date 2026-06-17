@@ -6,6 +6,9 @@ interface SettingsState {
   support_email: string;
   upi_id: string;
   upi_name: string;
+  brand_name: string;
+  brand_tagline: string;
+  brand_logo: string;
   loaded: boolean;
   load: () => Promise<void>;
 }
@@ -16,6 +19,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   support_email: '',
   upi_id: '',
   upi_name: 'AI Nest',
+  brand_name: 'AI Nest',
+  brand_tagline: 'Premium',
+  brand_logo: '',
   loaded: false,
   load: async () => {
     if (get().loaded) return;

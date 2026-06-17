@@ -47,22 +47,22 @@ const CATEGORY_LABEL: Record<string, string> = {
 
 function PaymentRow() {
   return (
-    <div className="mt-2.5 flex flex-wrap items-center justify-center gap-2 border-t border-white/8 pt-2.5">
-      <span className="flex h-7 min-w-[60px] items-center justify-center rounded-full bg-white px-3 text-[9px] font-black italic text-[#1a1f71] shadow-sm">
+    <div className="mt-2 pt-2 sm:mt-2.5 sm:pt-2.5 flex flex-nowrap items-center justify-center gap-1 sm:gap-2 border-t border-white/8 overflow-hidden">
+      <span className="flex h-6 sm:h-7 min-w-[34px] sm:min-w-[60px] shrink-0 items-center justify-center rounded-full bg-white px-1.5 sm:px-3 text-[8px] sm:text-[9px] font-black italic text-[#1a1f71] shadow-sm">
         VISA
       </span>
-      <span className="flex h-7 min-w-[46px] items-center justify-center rounded-full bg-white px-3 shadow-sm">
-        <span className="h-3 w-3 rounded-full bg-[#eb001b] -mr-1.5" />
-        <span className="h-3 w-3 rounded-full bg-[#f79e1b]" />
+      <span className="flex h-6 sm:h-7 min-w-[28px] sm:min-w-[46px] shrink-0 items-center justify-center rounded-full bg-white px-1.5 sm:px-3 shadow-sm">
+        <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-[#eb001b] -mr-1 sm:-mr-1.5" />
+        <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-[#f79e1b]" />
       </span>
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-sm">
-        <span className="text-[12px] font-black text-[#d23b96]">U</span>
+      <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-full bg-white shadow-sm">
+        <span className="text-[10px] sm:text-[12px] font-black text-[#d23b96]">U</span>
       </span>
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-sm">
-        <span className="text-[11px] font-black text-[#e11d48]">N</span>
+      <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-full bg-white shadow-sm">
+        <span className="text-[10px] sm:text-[11px] font-black text-[#e11d48]">N</span>
       </span>
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-sm">
-        <span className="text-[11px] font-black text-[#f0b90b]">B</span>
+      <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-full bg-white shadow-sm">
+        <span className="text-[10px] sm:text-[11px] font-black text-[#f0b90b]">B</span>
       </span>
     </div>
   );
@@ -91,107 +91,101 @@ export function ProductCard({ product }: ProductCardProps) {
   }, [showQuickDetails]);
 
   return (
-    <article className="group relative flex h-full min-h-[510px] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#28323f] shadow-[0_20px_50px_rgba(3,8,20,0.34)] transition-all duration-300 hover:-translate-y-1 hover:border-[#4ab0ff]/45 hover:shadow-[0_30px_70px_rgba(22,72,160,0.28)]">
-      <div className="relative h-[182px] shrink-0 overflow-hidden bg-[#10172b]">
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `radial-gradient(circle at 50% 22%, ${colors.from}33, transparent 58%)`,
-          }}
-        />
-        <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/5 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/20 to-transparent" />
-
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-[20px] sm:rounded-[28px] border border-white/10 bg-[#28323f] shadow-[0_20px_50px_rgba(3,8,20,0.34)] transition-all duration-300 sm:min-h-[446px] hover:-translate-y-1 hover:border-[#4ab0ff]/45 hover:shadow-[0_30px_70px_rgba(22,72,160,0.28)]">
+      <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#10172b]">
         {showImage ? (
-          <div className="absolute inset-0 flex items-center justify-center px-6 pt-1">
-            <img
-              src={product.image}
-              alt={product.name}
-              onError={() => setImgError(true)}
-              className="h-[108px] w-[82px] rounded-[2px] border border-white/90 object-contain bg-[#0a1020] shadow-[0_18px_42px_rgba(0,0,0,0.35)] transition-transform duration-500 group-hover:scale-105 sm:h-[112px] sm:w-[84px]"
-            />
-          </div>
+          <img
+            src={product.image}
+            alt={product.name}
+            onError={() => setImgError(true)}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4">
+          <>
             <div
-              className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/10 text-white shadow-[0_10px_28px_rgba(0,0,0,0.25)] backdrop-blur-sm transition-transform duration-300 group-hover:scale-105"
-              style={{ boxShadow: `0 12px 32px -10px ${colors.from}` }}
-            >
-              <LucideIcon name={product.logo || 'Sparkles'} size={26} strokeWidth={2} />
+              className="absolute inset-0"
+              style={{
+                background: `radial-gradient(circle at 50% 22%, ${colors.from}33, transparent 58%)`,
+              }}
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4">
+              <div
+                className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-white/10 text-white shadow-[0_10px_28px_rgba(0,0,0,0.25)] backdrop-blur-sm transition-transform duration-300 group-hover:scale-105"
+                style={{ boxShadow: `0 12px 32px -10px ${colors.from}` }}
+              >
+                <LucideIcon name={product.logo || 'Sparkles'} size={28} strokeWidth={2} />
+              </div>
+              <span className="max-w-[180px] truncate text-center text-[11px] font-extrabold tracking-tight text-white">
+                {product.name}
+              </span>
             </div>
-            <span className="max-w-[180px] truncate text-center text-[11px] font-extrabold tracking-tight text-white">
-              {product.name}
-            </span>
-          </div>
+          </>
         )}
 
-        <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-xl border border-white/10 bg-black/45 px-3 py-1 text-[10px] font-extrabold text-white/90 backdrop-blur-sm">
-          <LucideIcon name="Star" size={9} className="fill-gold text-gold" />
-          Featured
-        </span>
+        {/* dark gradients so the Featured / discount badges stay readable on any image */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-black/35 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/30 to-transparent" />
 
         {discount > 0 && (
-          <span className="absolute right-3 top-3 rounded-2xl bg-[#43a5ff] px-3 py-1 text-[11px] font-black text-white shadow-[0_10px_22px_rgba(67,165,255,0.25)]">
-            -{discount}% OFF
+          <span className="absolute right-2 top-2 sm:right-3 sm:top-3 rounded-md sm:rounded-2xl bg-[#43a5ff] px-1.5 py-[1px] sm:px-3 sm:py-1 text-[8px] sm:text-[11px] leading-none font-black text-white shadow-[0_10px_22px_rgba(67,165,255,0.25)]">
+            -{discount}%
           </span>
         )}
 
-        <span className="absolute bottom-3 left-3 inline-flex items-center rounded-full border border-white/10 bg-black/25 px-3 py-1 text-[10px] font-semibold text-white/90 backdrop-blur-sm">
+        <span className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 inline-flex items-center rounded-full border border-white/10 bg-black/25 px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[10px] font-semibold text-white/90 backdrop-blur-sm">
           {categoryLabel}
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col px-5 pb-4 pt-3.5">
-        <h3 className="mb-1.5 line-clamp-1 text-[21px] font-black leading-tight tracking-tight text-white transition-colors group-hover:text-[#9ed1ff]">
+      <div className="flex flex-1 flex-col px-2.5 pb-2.5 pt-2 sm:px-5 sm:pb-4 sm:pt-3.5">
+        <h3 className="mb-1 sm:mb-1.5 line-clamp-1 text-[15px] sm:text-[21px] font-black leading-tight tracking-tight text-white transition-colors group-hover:text-[#9ed1ff]">
           {product.name}
         </h3>
-        <p className="mb-2.5 min-h-[2.4rem] line-clamp-2 text-[13px] leading-5 text-[#c7d0de]">
+        <p className="mb-2 sm:mb-2.5 line-clamp-2 text-[12px] sm:text-[13px] leading-[1.15rem] sm:leading-5 text-[#c7d0de] sm:min-h-[2.4rem]">
           {product.shortDescription}
         </p>
 
-        <div className="mb-2.5 flex items-end justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-end gap-2">
-              <span className="text-[31px] font-black leading-none tracking-tight text-[#d8ecff]">
-                Rs {product.monthlyPrice.toLocaleString('en-IN')}
+        <div className="mb-2.5 sm:mb-3">
+          <div className="flex items-end gap-1.5 sm:gap-2 whitespace-nowrap">
+            <span className="text-[22px] sm:text-[31px] font-black leading-none tracking-tight text-[#d8ecff]">
+              Rs {product.monthlyPrice.toLocaleString('en-IN')}
+            </span>
+            <span className="pb-0.5 sm:pb-1 text-[9px] sm:text-[10px] font-semibold text-white/70">
+              / mo
+            </span>
+          </div>
+          <div className="mt-1 flex items-center justify-between gap-2">
+            {product.originalPrice > product.monthlyPrice ? (
+              <span className="text-[11px] sm:text-[12px] font-medium text-white/45 line-through whitespace-nowrap">
+                Rs {product.originalPrice.toLocaleString('en-IN')}
               </span>
-              <span className="pb-1 text-[10px] font-semibold text-white/70">
-                / month
-              </span>
-            </div>
-            {product.originalPrice > product.monthlyPrice && (
-              <div className="mt-1 flex items-center gap-2 text-[12px] font-medium text-white/65">
-                <span className="line-through text-white/45">
-                  Rs {product.originalPrice.toLocaleString('en-IN')}
-                </span>
-              </div>
+            ) : (
+              <span />
             )}
+            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 sm:px-2.5 py-0.5 text-[9px] sm:text-[11px] font-bold text-emerald-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              In stock
+            </span>
           </div>
         </div>
 
-        <div className="mb-2.5">
-          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-0.5 text-[11px] font-bold text-emerald-300">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            In stock
-          </span>
-        </div>
-
-        <div className="mt-auto flex items-center gap-2.5">
+        <div className="mt-auto flex items-center gap-2 sm:gap-2.5">
           <button
             type="button"
             onClick={() => setShowQuickDetails(true)}
-            className="flex items-center justify-center gap-2 rounded-2xl border border-white/8 bg-[#1f2734] px-4 py-2.25 text-[13px] font-extrabold text-white transition-colors hover:bg-[#273142]"
+            className="flex shrink-0 items-center justify-center gap-2 rounded-xl sm:rounded-2xl border border-white/8 bg-[#1f2734] px-2.5 py-2.5 sm:px-4 sm:py-2.25 text-[13px] font-extrabold text-white transition-colors hover:bg-[#273142]"
+            aria-label="Quick details"
           >
             <span className="flex h-5 w-5 items-center justify-center rounded-full border border-white/70 text-[11px] leading-none">
               i
             </span>
-            Details
+            <span className="hidden sm:inline">Details</span>
           </button>
           <Link
             to={`/products/${product.slug}`}
-            className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#4ab0ff] px-4 py-2.25 text-[13px] font-extrabold text-[#08111f] shadow-[0_12px_24px_rgba(74,176,255,0.22)] transition-colors hover:bg-[#65bcff]"
+            className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap rounded-xl sm:rounded-2xl bg-[#4ab0ff] px-2 py-2.5 sm:px-4 sm:py-2.25 text-[13px] font-extrabold text-[#08111f] shadow-[0_12px_24px_rgba(74,176,255,0.22)] transition-colors hover:bg-[#65bcff] active:scale-[0.98]"
           >
-            <LucideIcon name="Zap" size={15} className="fill-current" />
+            <LucideIcon name="Zap" size={14} className="shrink-0 fill-current" />
             Buy Now
           </Link>
         </div>

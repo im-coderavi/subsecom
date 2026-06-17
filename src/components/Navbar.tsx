@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useCartStore } from '../store/useCartStore';
 import { LucideIcon } from './LucideIcon';
+import { BrandLogo } from './BrandLogo';
 import { AnimatePresence, motion } from 'motion/react';
 
 const CATEGORIES = [
@@ -99,14 +100,8 @@ export function Navbar() {
         <nav className="max-w-[1400px] mx-auto flex items-center justify-between gap-4 px-4 sm:px-6 h-[68px]">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30">
-              <span className="text-white font-black text-sm tracking-tighter italic">AI</span>
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-extrabold text-lg text-white tracking-tight">AI Nest</span>
-              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em]">Premium</span>
-            </div>
+          <Link to="/" className="flex-shrink-0">
+            <BrandLogo size="md" />
           </Link>
 
           {/* Desktop links — centered */}
@@ -173,12 +168,7 @@ export function Navbar() {
               className="fixed top-0 right-0 bottom-0 w-[82%] max-w-[320px] bg-[#161e28] border-l border-line z-50 shadow-2xl flex flex-col lg:hidden"
             >
               <div className="p-4 border-b border-line flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-700 flex items-center justify-center">
-                    <span className="text-white font-black text-xs italic">AI</span>
-                  </div>
-                  <span className="font-extrabold text-sm text-white">AI Nest</span>
-                </div>
+                <BrandLogo size="sm" showTagline={false} />
                 <button onClick={() => setMobileOpen(false)} className="p-1.5 rounded-xl bg-surface text-slate-400"><LucideIcon name="X" size={16} /></button>
               </div>
 

@@ -239,27 +239,25 @@ export function ProductDetails() {
 
             {/* HERO CARD */}
             <div className="rounded-3xl overflow-hidden border border-line">
-              <div className="relative bg-gradient-to-br from-[#323e4c] via-[#1d2732] to-[#161e28] px-8 pt-10 pb-0 flex flex-col items-center overflow-hidden">
-                <div className="absolute top-0 left-1/4 w-64 h-64 bg-brand-600/25 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-8 right-1/4 w-48 h-48 bg-brand-500/15 rounded-full blur-2xl pointer-events-none" />
+              <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-[#323e4c] via-[#1d2732] to-[#161e28]">
+                {product.image && !imgError ? (
+                  <img src={product.image} alt={product.name} className="absolute inset-0 h-full w-full object-cover" onError={() => setImgError(true)} />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <LucideIcon name={product.logo} size={96} strokeWidth={1.2} className="text-white/80" />
+                  </div>
+                )}
 
-                <div className="relative w-full flex items-center justify-between mb-6 flex-wrap gap-2">
+                {/* dark gradients so the overlaid badges stay readable on any image */}
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/45 to-transparent" />
+
+                {/* badges overlaid on the image */}
+                <div className="absolute left-4 right-4 top-4 flex items-start justify-between gap-2 flex-wrap">
                   <div className="flex items-center gap-2 flex-wrap">
                     {product.badge && <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-brand-600 text-white shadow-lg shadow-brand-600/30">{product.badge}</span>}
-                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-white/10 text-white/80 border border-white/10 capitalize">{product.category}</span>
+                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-black/40 text-white/90 border border-white/10 capitalize backdrop-blur-sm">{product.category}</span>
                   </div>
                   {discount > 0 && <span className="px-3 py-1 rounded-full text-[10px] font-black bg-brand-500 text-white shadow-lg shadow-brand-500/30">{discount}% OFF</span>}
-                </div>
-
-                <div className="relative z-10">
-                  <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-48 h-12 bg-brand-500/20 blur-2xl rounded-full" />
-                  {product.image && !imgError ? (
-                    <img src={product.image} alt={product.name} className="relative w-44 h-44 object-contain drop-shadow-2xl" onError={() => setImgError(true)} />
-                  ) : (
-                    <div className="relative w-36 h-36 rounded-3xl bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-sm">
-                      <LucideIcon name={product.logo} size={60} strokeWidth={1.2} className="text-white/80" />
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -495,8 +493,16 @@ export function ProductDetails() {
                 {boughtTogether.map((item, index) => (
                   <div key={item.slug} className="flex items-center gap-3 sm:gap-5 flex-shrink-0">
                     <div className="flex flex-col items-center gap-2">
-                      {/* Blank image box — admin panel se product image yahan lagegi */}
-                      <div className="h-28 w-24 rounded-[18px] border border-line bg-surface-3 shadow-[0_10px_24px_rgba(0,0,0,0.25)]" />
+                      <ProductMedia
+                        image={item.image}
+                        alt={item.name}
+                        logo={item.logo}
+                        title={item.name}
+                        category={item.category}
+                        imageClassName="h-[100px] w-[100px] sm:h-[150px] sm:w-[150px] rounded-2xl border border-line object-cover bg-surface-3 shadow-[0_10px_24px_rgba(0,0,0,0.25)]"
+                        fallbackClassName="flex h-[100px] w-[100px] sm:h-[150px] sm:w-[150px] items-center justify-center rounded-2xl border border-line bg-surface-3 shadow-[0_10px_24px_rgba(0,0,0,0.25)]"
+                        iconSize={34}
+                      />
                       <span className="flex min-h-[2.2rem] max-w-[104px] items-start justify-center text-center text-[12px] font-bold text-white leading-snug line-clamp-2">{item.name}</span>
                     </div>
                     {index < boughtTogether.length - 1 && (
@@ -544,7 +550,7 @@ export function ProductDetails() {
               <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">You Might Also Like</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-5">
               {alsoLike.map((item) => {
                 const itemDiscount = item.originalPrice > item.monthlyPrice
                   ? Math.round(((item.originalPrice - item.monthlyPrice) / item.originalPrice) * 100)
@@ -556,28 +562,26 @@ export function ProductDetails() {
                     to={`/products/${item.slug}`}
                     className="group overflow-hidden rounded-[24px] border border-line bg-surface transition-all duration-300 hover:-translate-y-1 hover:border-brand-500/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.22)]"
                   >
-                    <div className="relative h-[220px] bg-[#10172b]">
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent" />
+                    <div className="relative aspect-square w-full overflow-hidden bg-[#10172b]">
+                      <ProductMedia
+                        image={item.image}
+                        alt={item.name}
+                        logo={item.logo}
+                        title={item.name}
+                        category={item.category}
+                        imageClassName="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        fallbackClassName="absolute inset-0 flex items-center justify-center"
+                        iconSize={40}
+                      />
+                      <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/40 to-transparent" />
                       <div className="absolute left-3 top-3 inline-flex items-center rounded-full border border-white/10 bg-black/40 px-3 py-1 text-[10px] font-extrabold text-white/90 backdrop-blur-sm">
                         {item.category}
                       </div>
                       {itemDiscount > 0 && (
                         <div className="absolute right-3 top-3 rounded-2xl bg-[#43a5ff] px-3 py-1 text-[10px] font-black text-white">
-                          -{itemDiscount}% OFF
+                          -{itemDiscount}%
                         </div>
                       )}
-                      <div className="flex h-full items-center justify-center p-6">
-                        <ProductMedia
-                          image={item.image}
-                          alt={item.name}
-                          logo={item.logo}
-                          title={item.name}
-                          category={item.category}
-                          imageClassName="h-[120px] w-[88px] rounded-[3px] border border-white/90 object-contain bg-[#0a1020]"
-                          fallbackClassName="flex h-[120px] w-[88px] items-center justify-center rounded-2xl border border-white/15 bg-white/10"
-                          iconSize={28}
-                        />
-                      </div>
                     </div>
 
                     <div className="p-4">

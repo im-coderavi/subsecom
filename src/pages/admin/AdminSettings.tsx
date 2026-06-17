@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { LucideIcon } from '../../components/LucideIcon';
+import { imageToDataUrl } from '../../utils/imageToDataUrl';
 
 const SETTING_FIELDS = [
+  { key: 'brand_name',     label: 'Brand Name',          placeholder: 'AI Nest',                     icon: 'Type',     group: 'Branding' },
+  { key: 'brand_tagline',  label: 'Tagline',             placeholder: 'Premium',                     icon: 'Tag',      group: 'Branding' },
   { key: 'upi_id',         label: 'UPI ID',              placeholder: 'ainest@merchant-upi',         icon: 'QrCode',   group: 'UPI / QR Payment' },
   { key: 'upi_name',       label: 'UPI Display Name',    placeholder: 'AI Nest',                     icon: 'User',     group: 'UPI / QR Payment' },
   { key: 'crypto_address', label: 'Crypto Wallet Address', placeholder: '0x4b78A9C102Ef34…',         icon: 'Bitcoin',  group: 'Crypto Payment' },
@@ -18,8 +21,22 @@ export function AdminSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingLogo(true);
+    try {
+      const dataUrl = await imageToDataUrl(file, 400, 0.9);
+      setValues((v) => ({ ...v, brand_logo: dataUrl }));
+    } finally {
+      setUploadingLogo(false);
+      e.target.value = '';
+    }
+  };
 
   useEffect(() => {
     fetch('/api/admin/settings', { headers: { Authorization: `Bearer ${token}` } })
@@ -78,6 +95,41 @@ export function AdminSettings() {
                   </div>
                 ))}
               </div>
+
+              {/* Brand logo uploader */}
+              {group === 'Branding' && (
+                <div className="px-6 pb-6 flex items-center gap-5">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-800 border border-neutral-700 overflow-hidden flex-shrink-0">
+                    {values['brand_logo'] ? (
+                      <img src={values['brand_logo']} alt="Logo" className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-white font-black text-sm italic">
+                        {(values['brand_name'] || 'AI Nest').replace(/[^a-zA-Z0-9]/g, '').slice(0, 2).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[10px] font-extrabold text-neutral-500 uppercase tracking-wider">Logo Image</p>
+                    <div className="flex items-center gap-2">
+                      <label className="flex items-center gap-2 px-3 py-2 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-xl cursor-pointer transition-all">
+                        {uploadingLogo ? <LucideIcon name="Loader" size={13} className="animate-spin" /> : <LucideIcon name="Upload" size={13} />}
+                        {uploadingLogo ? 'Uploading…' : 'Upload Logo'}
+                        <input type="file" accept="image/*" onChange={handleLogoUpload} disabled={uploadingLogo} className="hidden" />
+                      </label>
+                      {values['brand_logo'] && (
+                        <button
+                          type="button"
+                          onClick={() => setValues((v) => ({ ...v, brand_logo: '' }))}
+                          className="flex items-center gap-1.5 px-3 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-bold rounded-xl transition-all"
+                        >
+                          <LucideIcon name="Trash2" size={13} /> Remove
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-neutral-600 font-bold">No logo = gradient initials badge. Click Save to apply.</p>
+                  </div>
+                </div>
+              )}
 
               {/* UPI QR preview */}
               {group === 'UPI / QR Payment' && upiId && (

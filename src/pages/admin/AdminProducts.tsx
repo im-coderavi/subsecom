@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { LucideIcon } from '../../components/LucideIcon';
+import { imageToDataUrl } from '../../utils/imageToDataUrl';
 
 interface PricingPlan { months: number; price: number; label?: string; }
 
@@ -88,15 +89,12 @@ export function AdminProducts() {
 
   const handleImageUpload = async (file: File) => {
     setUploading(true);
+    setError('');
     try {
-      const fd = new FormData();
-      fd.append('image', file);
-      const res = await fetch('/api/admin/upload', { method: 'POST', headers: authHeader, body: fd });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setForm((f) => ({ ...f, image: data.url }));
+      const dataUrl = await imageToDataUrl(file, 700, 0.85);
+      setForm((f) => ({ ...f, image: dataUrl }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed');
+      setError(err instanceof Error ? err.message : 'Image processing failed');
     } finally {
       setUploading(false);
     }
@@ -325,17 +323,48 @@ export function AdminProducts() {
 
                 <div className="col-span-2">
                   <label className="block text-[10px] font-extrabold text-neutral-500 uppercase tracking-wider mb-1">
-                    Frequently Bought Together Slugs
+                    Frequently Bought Together
                   </label>
-                  <textarea
-                    rows={3}
-                    value={form.frequentlyBoughtTogether}
-                    onChange={(e) => setForm((f) => ({ ...f, frequentlyBoughtTogether: e.target.value }))}
-                    placeholder={"chatgpt-plus\nclaude-3-5\ngemini-pro"}
-                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-xs font-bold text-white placeholder-neutral-600 focus:outline-none focus:border-violet-500 resize-none"
-                  />
+                  {(() => {
+                    const selected = form.frequentlyBoughtTogether.split('\n').map((s) => s.trim().toLowerCase()).filter(Boolean);
+                    const selectable = products.filter((p) => p.slug && p.slug.toLowerCase() !== form.slug.trim().toLowerCase());
+                    const toggle = (slug: string) => {
+                      const set = new Set(selected);
+                      if (set.has(slug)) set.delete(slug); else set.add(slug);
+                      setForm((f) => ({ ...f, frequentlyBoughtTogether: Array.from(set).join('\n') }));
+                    };
+                    if (selectable.length === 0) {
+                      return <p className="text-[11px] text-neutral-500 font-semibold py-2">Add more products first to bundle them here.</p>;
+                    }
+                    return (
+                      <div className="max-h-44 overflow-y-auto rounded-xl border border-neutral-700 bg-neutral-800 divide-y divide-neutral-700/60">
+                        {selectable.map((p) => {
+                          const checked = selected.includes(p.slug.toLowerCase());
+                          return (
+                            <button
+                              type="button"
+                              key={p._id}
+                              onClick={() => toggle(p.slug.toLowerCase())}
+                              className={`flex w-full items-center gap-3 px-3 py-2 text-left transition-colors ${checked ? 'bg-violet-600/15' : 'hover:bg-neutral-700/40'}`}
+                            >
+                              <span className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border ${checked ? 'border-violet-500 bg-violet-600 text-white' : 'border-neutral-600'}`}>
+                                {checked && <LucideIcon name="Check" size={11} strokeWidth={3} />}
+                              </span>
+                              {p.image
+                                ? <img src={p.image} alt="" className="h-7 w-7 flex-shrink-0 rounded object-cover" />
+                                : <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded bg-neutral-700 text-neutral-400"><LucideIcon name={p.logo || 'Box'} size={14} /></span>}
+                              <span className="min-w-0 flex-1">
+                                <span className="block truncate text-xs font-bold text-white">{p.name}</span>
+                                <span className="block truncate text-[10px] font-medium text-neutral-500">{p.slug}</span>
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
                   <p className="mt-1 text-[9px] text-neutral-600 font-medium">
-                    Enter product slugs, one per line. These products will appear in the Frequently Bought Together section.
+                    Select products to show in the Frequently Bought Together section. ({form.frequentlyBoughtTogether.split('\n').filter(Boolean).length} selected)
                   </p>
                 </div>
               </div>
