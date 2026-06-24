@@ -3,6 +3,7 @@ import express from 'express';
 import { GoogleGenAI } from '@google/genai';
 import { connectDB } from './_lib/config/db';
 import { Bundle } from './_lib/models/Bundle';
+import { User } from './_lib/models/User';
 import authRoutes from './_lib/routes/auth';
 import productRoutes from './_lib/routes/products';
 import orderRoutes from './_lib/routes/orders';
@@ -49,6 +50,21 @@ app.use(async (_req, _res, next) => {
             features: ['The complete developer and business operating suite', 'Includes text, code, voice, databases, and audio tools', 'Over ₹1800+ separate monthly SaaS cost saved instantly'],
           },
         ]);
+      }
+
+      // One-time admin bootstrap — runs only when SEED_ADMIN=true is set.
+      // Creates the admin if missing, otherwise resets its password to ADMIN_PASSWORD.
+      if (process.env.SEED_ADMIN === 'true') {
+        const adminEmail = (process.env.ADMIN_EMAIL || 'admin@ainest.com').toLowerCase();
+        const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@123456';
+        const existingAdmin = await User.findOne({ email: adminEmail });
+        if (!existingAdmin) {
+          await User.create({ name: 'Admin', email: adminEmail, password: adminPassword, role: 'admin' });
+        } else {
+          existingAdmin.role = 'admin';
+          existingAdmin.password = adminPassword;
+          await existingAdmin.save();
+        }
       }
     }
     next();
